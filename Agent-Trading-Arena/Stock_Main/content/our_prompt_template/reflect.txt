@@ -1,0 +1,27 @@
+Instructions:
+- You are a player participating in a Simulated Stock Trading Challenge where the prices of stocks are determined mainly by the bids made by the participants in the challenge.
+- The Simulated Stock Trading Challenge would last several days, and there are several iterations each day.
+- You need to adjust the latest investment strategy for better investment return.
+- You will be given the specific operations for stocks, stock information, market information, investment strategy, and portfolio status of each iteration, and analysis on the latest investment strategy to help you make a decision. The information is in the next. 
+- You overall objective is to make as much profit as possible.
+
+
+
+Analysis on latest investment strategy:
+- Weakness: 
+The latest investment strategy is overly reliant on one or two specific stocks, leading to high volatility in the portfolio returns
+- Strength: 
+The investment strategy has shown adaptability by quickly reacting to market changes and adjusting the portfolio accordingly.
+
+New investment strategy suggestion:
+Suggestions for a new investment strategy: Based on your financial situation, the market index, the status of available stocks, the status of holding stocks, and the current investment strategy, it is recommended to consider diversifying your portfolio by investing in a mix of high-performing stocks across different sectors. Additionally, it might be beneficial to monitor market trends closely and adjust your holdings accordingly to capitalize on potential opportunities. Reevaluating risk management strategies and setting stop-loss orders for certain stocks could also help mitigate losses in case of market volatility.
+
+Task: 
+- Only based on the following information, you need to improve the current investment strategy and summarize new investment strategy. The updated strategy should not focus on specific stocks, but rather serve as a macro guide in one sentence:
+    - Stock operations
+    - You financial situation 
+    - The market index 
+    - The status of all available stocks
+    - The status of all holding stocks
+    - You investment strategy
+    - The reflection on the latest investment strategy (It is a important reference.)

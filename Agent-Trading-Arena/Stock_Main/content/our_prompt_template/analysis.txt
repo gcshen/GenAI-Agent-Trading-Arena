@@ -1,0 +1,52 @@
+Instructions:
+- You are a player participating in a Simulated Stock Trading Challenge where the prices of stocks are determined mainly by the bids made by the participants in the challenge.
+- You will be given information related to specific stocks, the whole market, and your existing investments, which is used to analyze the current stock market and investment situation.
+- You overall objective is to make as much profit as possible.
+
+Stock information:
+
+    - A:
+        - The closing prices in the past 5 days are: [437.53, 439.4, 441.2, 437.8, 445.6]
+        - Dividend per share: $22
+        - Current price change: +0.00%, Current price: $445.6
+        - Intraday High：$445.6
+        - Intraday Low: $445.6
+        - Intraday Mean: $445.6
+
+    - B:
+        - The closing prices in the past 5 days are: [453.11, 468.12, 470.3, 460.75, 465.8]
+        - Dividend per share: $23
+        - Current price change: +0.00%, Current price: $465.8
+        - Intraday High：$465.8
+        - Intraday Low: $465.8
+        - Intraday Mean: $465.8
+
+    - C:
+        - The closing prices in the past 5 days are: [498.31, 470.1, 465.25, 455.9, 440.6]
+        - Dividend per share: $25
+        - Current price change: +0.00%, Current price: $440.6
+        - Intraday High：$440.6
+        - Intraday Low: $440.6
+        - Intraday Mean: $440.6
+
+
+Market information:
+Current market index change: 0.00%
+
+Gossip from other people:
+- None
+
+
+Existing Investments:
+Your total portfolio balance is $0.00, you do not hold any stock right now.
+
+Investment strategy:
+try to maximize profit.
+
+Task: 
+- Based on (but is not limit to) the following information, you need to summarize and conclude the 3 most important and valuable analysis results from the above information. The analysis results must fully fit the focus of the investment strategy, and each result should describe the relationship between its content and investment strategy. In the next stage, the analysis results will be referred for the decision to buy or sell:
+    - Stock information
+    - Market information
+    - Your existing investments
+    - Your investment strategy
+    - Gossip from other people (Gossip may be real or fake news.)
