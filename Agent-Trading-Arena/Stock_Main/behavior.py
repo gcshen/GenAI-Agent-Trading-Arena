@@ -1,5 +1,6 @@
 import re
 import math
+import random
 from content.our_run_gpt_prompt import (
     run_gpt_prompt_choose_buy_stock,
     run_gpt_prompt_choose_sell_stock,
@@ -132,11 +133,32 @@ def stock_ops(virtual_date, persons, stocks, market_index, iter, args):
                     quantity,
                 ]
             if stock_name_buy == "hold" and stock_name_sell == "hold":
+                # Fallback: if no action, add a small rebalance trade to keep market active.
+                holdings = p.query_hold_stocks(virtual_date) or []
+                # If concentrated holdings and low cash, trim a bit; otherwise small buy.
+                if holdings and p.cash < p.minimum_living_expense * 2:
+                    largest = max(holdings, key=lambda h: h["quantity"])
+                    target_stock = stocks[largest["stock_id"]]
+                    qty = max(1, int(largest["quantity"] * 0.1))
+                    sell_list = ["sell", target_stock.stock_name, target_stock.current_price, qty]
+                    buy_list = ["hold", None, None, None]
+                    op_memory = f"sell {qty} shares of stock {target_stock.stock_name} at ${target_stock.current_price}"
+                    if args.verbose:
+                        print(f"    [Decision] person {p.person_id} fallback sell {qty} of {target_stock.stock_name}")
+                elif p.cash > p.minimum_living_expense * 2:
+                    affordable_stocks = [s for s in stocks if s.current_price > 0]
+                    target = random.choice(affordable_stocks) if affordable_stocks else stocks[0]
+                    qty = max(1, min(50, int((p.cash * 0.02) / target.current_price)))
+                    buy_list = ["buy", target.stock_name, target.current_price, qty]
+                    sell_list = ["hold", None, None, None]
+                    op_memory = f"buy {qty} shares of stock {target.stock_name} at ${target.current_price}"
+                    if args.verbose:
+                        print(f"    [Decision] person {p.person_id} fallback buy {qty} of {target.stock_name}")
                 p.add_memory(
                     virtual_date,
                     iter,
                     op_memory,
-                    "hold",
+                    "hold" if buy_list[0] == "hold" and sell_list[0] == "hold" else ("buy" if buy_list[0] != "hold" else "sell"),
                     gossip,
                     analysis_results,
                     "None",

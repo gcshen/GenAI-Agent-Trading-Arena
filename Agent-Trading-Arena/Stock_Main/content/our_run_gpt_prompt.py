@@ -504,7 +504,7 @@ def run_gpt_prompt_choose_buy_stock(virtual_date, persona, stocks_list, analysis
         except Exception:
             return False
 
-    if persona.cash < persona.identity["minimum_living_expense"] * 10:
+    if persona.cash < persona.identity["minimum_living_expense"] * 3:
         return "Operation: hold"
 
     prompt_template = _paths.PROMPT_PATH.joinpath("buy_based_on_analysis.txt")

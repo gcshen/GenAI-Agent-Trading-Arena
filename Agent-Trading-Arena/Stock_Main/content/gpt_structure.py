@@ -12,10 +12,13 @@ from content.utils import openrouter_api_key, openrouter_base_url, default_model
 from database_utils import round_two_decimal, trans_url
 import os, sys
 from pathlib import Path
-try:
-    from openai import OpenAI  # type: ignore
-except ImportError as e:
-    raise ImportError("The 'openai' package is required. Install with 'pip install openai'") from e
+if not offline_mode:
+    try:
+        from openai import OpenAI  # type: ignore
+    except ImportError as e:
+        raise ImportError("The 'openai' package is required. Install with 'pip install openai'") from e
+else:
+    OpenAI = None
 import re
 
 PROJ_BASE = Path(__file__).resolve().parent.parent

@@ -291,11 +291,15 @@ class Person:
                 self.db.execute_sql(cmd)
 
         if order["type"] == "sell":
-            self.cash += order_volume
-            self.asset -= order_volume
+            if stock_onhold is None or stock_onhold["quantity"] <= 0:
+                return
+            sell_qty = min(quantity, stock_onhold["quantity"])
+            if sell_qty <= 0:
+                return
+            quantity = sell_qty
+            self.cash += price * quantity
+            self.asset -= price * quantity
             new_quantity = stock_onhold["quantity"] - quantity
-            assert new_quantity >= 0
-            
             profit_amount = (price - stock_onhold["cost_price"]) * quantity
             cmd = (
                 "update account set  quantity={} where stock_id={} and virtual_date={} and "

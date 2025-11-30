@@ -1,0 +1,57 @@
+person_id,virtual_date,iteration,stock_operations,strategy,type,gossip,analysis_for_stocks,analysis_for_strategy,stock_prices,market_change,financial_situation
+0,0,0,buy 5 shares of stock B at $140.0,conservative,buy,None,"The analysis results:
+- hold
+- hold
+- hold",None,"
+    - A:
+        - The closing prices in the past 5 days are: [110, 130, 90, 160, 180]
+        - Dividend per share: $22
+        - Current price change: +0.00%, Current price: $180.0
+        - Intraday High：$180
+        - Intraday Low: $180
+        - Intraday Mean: $180.0
+
+    - B:
+        - The closing prices in the past 5 days are: [80, 95, 70, 115, 140]
+        - Dividend per share: $23
+        - Current price change: +0.00%, Current price: $140.0
+        - Intraday High：$140
+        - Intraday Low: $140
+        - Intraday Mean: $140.0
+
+    - C:
+        - The closing prices in the past 5 days are: [220, 190, 210, 180, 200]
+        - Dividend per share: $25
+        - Current price change: +0.00%, Current price: $200.0
+        - Intraday High：$200
+        - Intraday Low: $200
+        - Intraday Mean: $200.0
+",Current market index change: 0.00%,"Your total portfolio balance is $0.00, you do not hold any stock right now."
+1,0,0,buy 4 shares of stock B at $140.0,radical,buy,None,"The analysis results:
+- hold
+- hold
+- hold",None,"
+    - A:
+        - The closing prices in the past 5 days are: [110, 130, 90, 160, 180]
+        - Dividend per share: $22
+        - Current price change: +0.00%, Current price: $180.0
+        - Intraday High：$180
+        - Intraday Low: $180
+        - Intraday Mean: $180.0
+
+    - B:
+        - The closing prices in the past 5 days are: [80, 95, 70, 115, 140]
+        - Dividend per share: $23
+        - Current price change: +0.00%, Current price: $140.0
+        - Intraday High：$140
+        - Intraday Low: $140
+        - Intraday Mean: $140.0
+
+    - C:
+        - The closing prices in the past 5 days are: [220, 190, 210, 180, 200]
+        - Dividend per share: $25
+        - Current price change: +0.00%, Current price: $200.0
+        - Intraday High：$200
+        - Intraday Low: $200
+        - Intraday Mean: $200.0
+",Current market index change: 0.00%,"Your total portfolio balance is $0.00, you do not hold any stock right now."

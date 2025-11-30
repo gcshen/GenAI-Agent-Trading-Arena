@@ -1,0 +1,8 @@
+timestamp,virtual_date,weekday,iteration,stock_id,person_id,type,price,quantity,status
+1764505393995,0,0,0,0,-1,sell,180,150,closed
+1764505394008,0,0,0,1,-1,sell,140,191,closed
+1764505394021,0,0,0,2,-1,sell,200,250,closed
+1764505394040,0,0,0,1,1,buy,147,4,finished
+1764505394053,0,0,0,1,0,buy,147,5,finished
+1764505394009,0,0,0,1,-1,sell,140.95454545454547,5,finished
+1764505394009,0,0,0,1,-1,sell,141.54195804195805,4,finished
