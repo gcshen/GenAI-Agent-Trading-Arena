@@ -179,7 +179,7 @@ class Person:
                 self.principle = p["principle"]
                 self.cash = p["cash"]
                 self.minimum_living_expense = p["minimum_living_expense"]
-                self.reflect_frequency = p["reflect_frequency"]
+                self.reflect_frequency = p.get("reflect_frequency", 0)
 
         self.asset = 0
 

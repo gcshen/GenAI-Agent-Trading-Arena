@@ -20,6 +20,9 @@ def init_paths(**kwargs):
     _paths.PROMPT_PATH = _paths.CONTENT_PATH.joinpath("our_prompt_template")
 
 def load_persona(json_path):
+    if not os.path.exists(json_path):
+        # fallback to init seed file
+        json_path = _paths.SAVE_PATH.joinpath("init", "persona.json")
     with open(json_path, 'r') as file:
         persona = json.load(file)
        # print(persona)
@@ -29,6 +32,8 @@ def load_persona(json_path):
 
 def load_stocks(json_path):
     print(f"==== CWD = {os.getcwd()} ====\n")
+    if not os.path.exists(json_path):
+        json_path = _paths.SAVE_PATH.joinpath("init", "stocks.json")
     with open(json_path, 'r') as file:
         stocks = json.load(file)
        # print(stocks)

@@ -1,10 +1,7 @@
 import sqlite3
 import time
-import matplotlib.pyplot as plt
+# Force non-GUI backend to avoid macOS backend crashes in headless mode.
 import base64
-import numpy as np
-import mplfinance as mpf
-import pandas as pd
 
 
 current_milli_time = lambda: int(round(time.time() * 1000))
@@ -171,6 +168,11 @@ def query_all_stocks(db, virtual_date):
     else:
         return None
 def stock_(stock_id, start_date=-9, end_date=0):
+    try:
+        import pandas as pd
+    except Exception:
+        print("Warning: pandas not available; skipping stock_ helper.")
+        return None
     conn = sqlite3.connect('./save/sim01/data.db')
     cursor = conn.cursor()
     cmd = """
@@ -254,7 +256,7 @@ class Database_operate:
         self._conn = sqlite3.connect("{}.db".format(self._db_name))
         self._cur = self._conn.cursor()
         cmdcre_orders = (
-            "Create Table active_orders (timestamp Integer NOT NULL, virtual_date Integer, "
+            "Create Table IF NOT EXISTS active_orders (timestamp Integer NOT NULL, virtual_date Integer, "
             "weekday INTEGER, iteration INTEGER,"
             "stock_id INTEGER, person_id INTEGER, type text check(type IN ('sell','buy')), "
             "price Numeric, quantity INTEGER, "
@@ -263,7 +265,7 @@ class Database_operate:
         self.execute_sql(cmdcre_orders)
 
         cmdcre_stock = (
-            "Create Table stock (stock_id Integer NOT NULL, virtual_date Integer, "
+            "Create Table IF NOT EXISTS stock (stock_id Integer NOT NULL, virtual_date Integer, "
             "weekday INTEGER,"
             "volume  Numeric, quantity INTEGER, last_price Numeric, begin_price Numeric,"
             "highest_price Numeric, lowest_price Numeric )"
@@ -271,7 +273,7 @@ class Database_operate:
         self.execute_sql(cmdcre_stock)
 
         cmdcre_person = (
-            "Create Table person (person_id Integer, virtual_date Integer, "
+            "Create Table IF NOT EXISTS person (person_id Integer, virtual_date Integer, "
             "cash Numeric, asset Numeric,"
             "wealth Numeric, work_income Numeric,"
             "capital_gain Numeric, daily_expense Numeric,"
@@ -280,7 +282,7 @@ class Database_operate:
         self.execute_sql(cmdcre_person)
 
         cmdcre_account = (
-            "Create Table account (person_id Integer, stock_id Integer, virtual_date Integer, "
+            "Create Table IF NOT EXISTS account (person_id Integer, stock_id Integer, virtual_date Integer, "
             "weekday INTEGER, quantity INTEGER,"
             "cost_price Numeric, current_price Numeric, profit Numeric,"
             "start_date INTEGER)"
@@ -288,14 +290,14 @@ class Database_operate:
         self.execute_sql(cmdcre_account)
 
         cmdcre_account = (
-            "Create Table memory (person_id Integer, virtual_date Integer, iteration INTEGER, "
+            "Create Table IF NOT EXISTS memory (person_id Integer, virtual_date Integer, iteration INTEGER, "
             "stock_operations Text, strategy Text, type Text check(type IN ('sell','buy','hold','reflect')), gossip Text, "
             "analysis_for_stocks Text, analysis_for_strategy Text, stock_prices Text, market_change Text, financial_situation Text)"
         )
         self.execute_sql(cmdcre_account)
 
         cmdcre_gossip = (
-            "Create Table gossip (person_id Integer, virtual_date Integer, gossip Text)"
+            "Create Table IF NOT EXISTS gossip (person_id Integer, virtual_date Integer, gossip Text)"
         )
         self.execute_sql(cmdcre_gossip)
 

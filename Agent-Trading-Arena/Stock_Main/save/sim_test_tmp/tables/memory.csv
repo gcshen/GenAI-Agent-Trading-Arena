@@ -1,0 +1,13 @@
+person_id,virtual_date,iteration,stock_operations,strategy,type,gossip,analysis_for_stocks,analysis_for_strategy,stock_prices,market_change,financial_situation
+0,0,0,hold,conservative,hold,None,"The analysis results:
+- hold
+- hold
+- hold",None,"
+    - A:
+        - The closing prices in the past 5 days are: [437.53, 439.4, 441.2, 437.8, 445.6]
+        - Dividend per share: $0
+        - Current price change: +0.00%, Current price: $445.6
+        - Intraday High：$445.6
+        - Intraday Low: $445.6
+        - Intraday Mean: $445.6
+",Current market index change: 0.00%,"Your total portfolio balance is $0.00, you do not hold any stock right now."

@@ -1,0 +1,3 @@
+person_id,stock_id,virtual_date,weekday,quantity,cost_price,current_price,profit,start_date
+-1,0,0,0,300,0,445.6,0,0
+-1,0,1,1,300,0,445.6,0,0

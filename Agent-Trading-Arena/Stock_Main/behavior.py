@@ -84,14 +84,20 @@ def stock_ops(virtual_date, persons, stocks, market_index, iter, args):
     ops = []
     for p in persons:
         if p.person_id > -1:
+            if args.verbose:
+                print(f"    [Analysis] person {p.person_id} starting")
             analysis_results, gossip = analysis(
                 virtual_date, p, stocks, market_index, args.analysis_num, args.gossip_num_max
             )
+            if args.verbose:
+                print(f"    [Analysis] person {p.person_id} complete")
            # print(analysis_results,gossip)
             # p.analysis = analysis_results
             choose_buy = run_gpt_prompt_choose_buy_stock(
                 virtual_date, p, stocks, analysis_results
             )
+            if args.verbose:
+                print(f"    [Decision] person {p.person_id} buy decision: {choose_buy}")
            
             stock_name_buy, quantity, price = extract_for_choose_buy(choose_buy)
             if stock_name_buy == "hold":
@@ -107,6 +113,8 @@ def stock_ops(virtual_date, persons, stocks, market_index, iter, args):
             choose_sell = run_gpt_prompt_choose_sell_stock(
                 virtual_date, p, stocks, analysis_results
             )
+            if args.verbose:
+                print(f"    [Decision] person {p.person_id} sell decision: {choose_sell}")
             '''
             "Operation: sell, Stock name: [Stock Name], The number "
             "of shares: [Specific Number of Shares], Best Selling "
@@ -168,6 +176,8 @@ def stock_ops(virtual_date, persons, stocks, market_index, iter, args):
 
             p_list = [buy_list, sell_list]
             ops.append(p_list)
+    if args.verbose:
+        print(f"    [Analysis] ops compiled for {len(ops)} persons")
     return ops
 
 

@@ -1,0 +1,2 @@
+timestamp,virtual_date,weekday,iteration,stock_id,person_id,type,price,quantity,status
+1764468293845,0,0,0,0,-1,sell,445.6,300,closed

@@ -25,6 +25,7 @@ from Stock import Stock, Market_index
 from Market import Market
 from behavior import stock_ops, reflection, generate_gossip
 from load_json import save_all, load_all
+from export_history import export_history
 
 def get_args():
     parser = argparse.ArgumentParser(description='[Stock Simulation] Market Environment Settings')
@@ -47,6 +48,7 @@ def get_args():
 
     parser.add_argument('--analysis_num', type=int, default=3, help='number of agents performing analysis')
     parser.add_argument('--gossip_num_max', type=int, default=3, help='maximum number of gossip entries per round')
+    parser.add_argument('--export_history', action='store_true', help='export tables to CSV/markdown after run')
 
     args = parser.parse_args()
 
@@ -112,19 +114,32 @@ def overall_test(args):
     ) = init_all(args, load=False)
 
     for virtual_date in range(args.No_Days):
+        if args.verbose:
+            print(f"[Day {virtual_date+1}/{args.No_Days}] start")
         if virtual_date == 0:
             broker.ipo(virtual_date)
+            if args.verbose:
+                print(f"  IPO: broker listed inventories for all stocks")
 
         market_index.update_market_index(virtual_date)
         generate_gossip(virtual_date, persons, stocks)
 
         for iter in range(args.Iterations_Daily):
+            if args.verbose:
+                print(f"  Iteration {iter+1}/{args.Iterations_Daily}")
             ops = stock_ops(virtual_date, persons, stocks, market_index, iter, args)
+            if args.verbose:
+                buy_count = sum(1 for entry in ops for op in entry if op[0] == "buy")
+                sell_count = sum(1 for entry in ops for op in entry if op[0] == "sell")
+                hold_count = sum(1 for entry in ops for op in entry if op[0] == "hold")
+                print(f"    Ops summary -> buy:{buy_count} sell:{sell_count} hold:{hold_count}")
             rand = random.sample(range(0, args.Num_Person), args.Num_Person)
             for i in rand:
                 for j in range(2): 
                     op = ops[i][j]
                     persons[i].create_order(i, op, virtual_date, iter)
+            if args.verbose:
+                print("    Orders created; matching...")
 
             market.match_order(virtual_date, args)
             market.end_of_market(virtual_date, args)
@@ -136,6 +151,8 @@ def overall_test(args):
 
             reflection(virtual_date, persons, stocks, market_index, iter)
             save_all(virtual_date, iter, stocks, market_index, persons, market, args)
+            if args.verbose:
+                print("    Iteration complete and saved.")
 
         # End of the trading day
         market.end_of_day(virtual_date)
@@ -147,9 +164,13 @@ def overall_test(args):
         for each_stock in stocks:
             each_stock.end_of_day(virtual_date)
         market_index.end_of_day(virtual_date)
+        if args.verbose:
+            print(f"[Day {virtual_date+1}] end\n")
 
 
 if __name__ == "__main__":
     init_paths()
     args = get_args()
     overall_test(args)
+    if args.export_history:
+        export_history(args.SAVE_NAME)
