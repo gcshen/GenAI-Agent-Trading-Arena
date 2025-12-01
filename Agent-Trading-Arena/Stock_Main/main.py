@@ -120,6 +120,10 @@ def overall_test(args):
             broker.ipo(virtual_date)
             if args.verbose:
                 print(f"  IPO: broker listed inventories for all stocks")
+        else:
+            broker.relist_daily(virtual_date)
+            if args.verbose:
+                print("  Broker posted daily liquidity (buy/sell)")
 
         market_index.update_market_index(virtual_date)
         generate_gossip(virtual_date, persons, stocks)

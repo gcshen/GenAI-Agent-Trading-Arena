@@ -68,3 +68,4 @@ def test_export_history_runs():
     result = _run(cmd, env)
     assert result.returncode == 0, result.stderr
     assert (SAVE_DIR / "run_history.md").exists()
+    assert (SAVE_DIR / "summary.json").exists()

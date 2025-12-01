@@ -14,6 +14,9 @@ from load_json import load_persona
 from constant import STOCK_NAMES
 from content.our_run_gpt_prompt import integrate_hold_info, integrate_stock_info
 
+def _sanitize(text):
+    return str(text).replace("'", "''").replace('"', "''")
+
 
 class Broker:
     def __init__(self, stocks, database: Database_operate, folder_mem_saved=False):
@@ -108,6 +111,38 @@ class Broker:
                     each_stock.current_price,
                     self.inventories[each_stock.stock_id],
                 )
+    def relist_daily(self, virtual_date):
+        """Provide ongoing liquidity by posting small sell and buy quotes each day."""
+        for each_stock in self.stocks:
+            inv = self.inventories[each_stock.stock_id]
+            # Restock a small amount if empty to keep supply alive
+            if inv <= 0:
+                inv = max(inv, int(each_stock.quantity * 0.05))
+                self.inventories[each_stock.stock_id] = inv
+            # Sell a fixed slice of inventory
+            sell_qty = max(1, int(inv * 0.10))
+            submit_order(
+                self.db,
+                "sell",
+                self.person_id,
+                each_stock.stock_id,
+                virtual_date,
+                0,
+                each_stock.current_price,
+                sell_qty,
+            )
+            # Post a small buy to add demand
+            buy_qty = max(1, int(each_stock.quantity * 0.03))
+            submit_order(
+                self.db,
+                "buy",
+                self.person_id,
+                each_stock.stock_id,
+                virtual_date,
+                0,
+                each_stock.current_price,
+                buy_qty,
+            )
 
     def end_of_day(self, virtual_date):
         total_asset = 0
@@ -185,6 +220,7 @@ class Person:
 
         self.wealth = self.cash + self.asset  # no asset at the beginning
 
+        safe_principle = _sanitize(self.identity["principle"])
         cmd = """Insert Into person values({},{},{},{},{},{},{},{},'{}')""".format(
             self.person_id,
             0,
@@ -194,7 +230,7 @@ class Person:
             self.income,
             0,
             self.minimum_living_expense,
-            self.identity["principle"],
+            safe_principle,
         )
         self.db.execute_sql(cmd)
 
@@ -417,6 +453,7 @@ class Person:
         self.wealth = self.asset + self.cash
         self.broker.count_expense(self.daily_expense)
         #print("person_id:",self.person_id,";total_wealth:",self.wealth,";cash:",self.cash,";asset:",self.asset)
+        safe_principle = _sanitize(self.principle)
         cmd = ("insert into person values({},{},{},{},{},{},{},{},'{}')").format(
             self.person_id,
             virtual_date + 1,
@@ -426,7 +463,7 @@ class Person:
             self.income,
             capital_gain,
             self.daily_expense,
-            self.principle,
+            safe_principle,
         )
         self.db.execute_sql(cmd)
 
@@ -536,15 +573,15 @@ class Person:
             self.person_id,
             virtual_date,
             iteration,
-            stock_op,
-            self.principle,
-            type,
-            gossip,
-            analysis_stocks,
-            analysis_strategy,
-            integrate_stock_info(virtual_date, stocks_list),
-            market_index,
-            integrate_hold_info(virtual_date, self),
+            _sanitize(stock_op),
+            _sanitize(self.principle),
+            _sanitize(type),
+            _sanitize(gossip),
+            _sanitize(analysis_stocks),
+            _sanitize(analysis_strategy),
+            _sanitize(integrate_stock_info(virtual_date, stocks_list)),
+            _sanitize(market_index),
+            _sanitize(integrate_hold_info(virtual_date, self)),
         )
         self.db.execute_sql(cmd)
 

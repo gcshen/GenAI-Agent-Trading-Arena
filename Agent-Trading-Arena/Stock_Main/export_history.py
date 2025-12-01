@@ -1,6 +1,7 @@
 import argparse
 import csv
 import sqlite3
+import json
 from pathlib import Path
 
 
@@ -55,6 +56,16 @@ def export_history(save_name: str):
     md_path = save_dir / "run_history.md"
     with md_path.open("w") as f:
         f.write("\n".join(markdown_lines))
+
+    # Write summary JSON for frontend consumption
+    summary = {"save_name": save_name, "tables": {}}
+    for table in tables:
+        headers, rows = export_table(conn, table, output_dir)
+        summary["tables"][table] = {"columns": headers, "rows": rows}
+
+    summary_path = save_dir / "summary.json"
+    with summary_path.open("w") as f:
+        json.dump(summary, f)
 
     print(f"Export complete.\n- Markdown: {md_path}\n- CSVs: {output_dir}")
 

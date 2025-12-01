@@ -135,20 +135,23 @@ def stock_ops(virtual_date, persons, stocks, market_index, iter, args):
             if stock_name_buy == "hold" and stock_name_sell == "hold":
                 # Fallback: if no action, add a small rebalance trade to keep market active.
                 holdings = p.query_hold_stocks(virtual_date) or []
+                total_wealth = p.wealth if p.wealth is not None else (p.cash + p.asset)
                 # If concentrated holdings and low cash, trim a bit; otherwise small buy.
-                if holdings and p.cash < p.minimum_living_expense * 2:
-                    largest = max(holdings, key=lambda h: h["quantity"])
-                    target_stock = stocks[largest["stock_id"]]
-                    qty = max(1, int(largest["quantity"] * 0.1))
-                    sell_list = ["sell", target_stock.stock_name, target_stock.current_price, qty]
-                    buy_list = ["hold", None, None, None]
-                    op_memory = f"sell {qty} shares of stock {target_stock.stock_name} at ${target_stock.current_price}"
-                    if args.verbose:
-                        print(f"    [Decision] person {p.person_id} fallback sell {qty} of {target_stock.stock_name}")
-                elif p.cash > p.minimum_living_expense * 2:
+                if holdings:
+                    largest = max(holdings, key=lambda h: h["quantity"] * h["current_price"])
+                    largest_value = largest["quantity"] * largest["current_price"]
+                    if total_wealth > 0 and largest_value / total_wealth >= 0.3:
+                        qty = max(1, int(largest["quantity"] * 0.2))
+                        target_stock = stocks[largest["stock_id"]]
+                        sell_list = ["sell", target_stock.stock_name, target_stock.current_price, qty]
+                        buy_list = ["hold", None, None, None]
+                        op_memory = f"sell {qty} shares of stock {target_stock.stock_name} at ${target_stock.current_price}"
+                        if args.verbose:
+                            print(f"    [Decision] person {p.person_id} fallback sell {qty} of {target_stock.stock_name} (concentration trim)")
+                if buy_list[0] == "hold" and p.cash > p.minimum_living_expense * 2:
                     affordable_stocks = [s for s in stocks if s.current_price > 0]
                     target = random.choice(affordable_stocks) if affordable_stocks else stocks[0]
-                    qty = max(1, min(50, int((p.cash * 0.02) / target.current_price)))
+                    qty = max(1, min(40, int((p.cash * 0.03) / target.current_price)))
                     buy_list = ["buy", target.stock_name, target.current_price, qty]
                     sell_list = ["hold", None, None, None]
                     op_memory = f"buy {qty} shares of stock {target.stock_name} at ${target.current_price}"
