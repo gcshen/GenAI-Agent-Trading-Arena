@@ -35,7 +35,7 @@ class Stock:
                 self.current_price = s["past_stock_last_prices"][-1]
                 self.intraday_price_list.append(self.current_price)
                 self.book_value = self.current_price * self.quantity
-                self.DPS = s["DPS"]
+                self.DPS = s.get("DPS", 0)
                 for day in range(-4, 1):
                     cmd = "Insert Into stock values({},{},{},{},{},{},{},{},{})".format(
                         self.stock_id,

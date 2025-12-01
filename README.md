@@ -24,16 +24,18 @@ cd Agent-Trading-Arena
 pip install -r requirement.txt
 ```
 
-## Set OpenAI API Key:
+## Set OpenRouter API Key:
 
-Export your OpenAI API key as an environment variable. Replace "your_OpenAI_API_key" with your actual API key.
+Set your OpenRouter key as an environment variable (recommended):
 
 ```
-cd Stock_Main/content/utils.py
-openai_api_key = "your_OpenAI_API_key"
+export OPENROUTER_API_KEY="your_openrouter_api_key"
+# optional overrides:
+# export OPENROUTER_BASE_URL="https://openrouter.ai/api/v1"
+# export OPENROUTER_MODEL="openai/gpt-5-mini"
 ```
 
-OA_OPENAI_KEY is the OpenAI API key. You can get it from the [OpenAI](https://platform.openai.com/api-keys).
+The default model used by the code is `openai/gpt-5-mini` via OpenRouter. You can get a key from [OpenRouter](https://openrouter.ai/keys).
 
 # Experiment
 

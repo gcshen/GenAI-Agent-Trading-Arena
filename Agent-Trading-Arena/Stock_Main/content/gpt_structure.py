@@ -1,13 +1,24 @@
 import json
 import random
-import openai
 import time
-from timeout_decorator import timeout
-from content.utils import *
+try:
+    from timeout_decorator import timeout  # type: ignore
+except ImportError:
+    def timeout(*args, **kwargs):
+        def decorator(func):
+            return func
+        return decorator
+from content.utils import openrouter_api_key, openrouter_base_url, default_model, offline_mode
 from database_utils import round_two_decimal, trans_url
 import os, sys
 from pathlib import Path
-from openai import OpenAI
+if not offline_mode:
+    try:
+        from openai import OpenAI  # type: ignore
+    except ImportError as e:
+        raise ImportError("The 'openai' package is required. Install with 'pip install openai'") from e
+else:
+    OpenAI = None
 import re
 
 PROJ_BASE = Path(__file__).resolve().parent.parent
@@ -23,7 +34,47 @@ def init_paths(**kwargs):
     _paths.CONTENT_PATH = PROJ_BASE.joinpath("Stock_Main/content")
     _paths.PROMPT_PATH = _paths.CONTENT_PATH.joinpath("our_prompt_template")
 
-openai.api_key = openai_api_key
+def _resolve_api_key():
+    key = openrouter_api_key or os.getenv("OPENROUTER_API_KEY", "")
+    if offline_mode:
+        return "offline"
+    if not key:
+        raise RuntimeError("Missing OpenRouter API key. Set OPENROUTER_API_KEY before running.")
+    return key
+
+
+def _resolve_base_url():
+    return openrouter_base_url or os.getenv(
+        "OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1"
+    )
+
+
+def _get_client():
+    key = _resolve_api_key()
+    if key == "offline":
+        return None
+    return OpenAI(
+        api_key=key,
+        base_url=_resolve_base_url(),
+    )
+
+
+def _chat_completion(prompt, model=None, **kwargs):
+    client = _get_client()
+    if client is None:
+        class DummyChoice:
+            def __init__(self, content):
+                self.message = type("m", (), {"content": content})
+        class DummyCompletion:
+            def __init__(self, content):
+                self.choices = [DummyChoice(content)]
+        return DummyCompletion('{"output": "offline"}')
+    completion = client.chat.completions.create(
+        model=model or default_model,
+        messages=[{"role": "user", "content": prompt}],
+        **kwargs,
+    )
+    return completion
 
 
 def temp_sleep(seconds=1):
@@ -32,12 +83,7 @@ def temp_sleep(seconds=1):
 
 def ChatGPT_single_request(prompt):
     temp_sleep()
-    client = OpenAI(
-        api_key=openai_api_key
-        )
-    completion = client.chat.completions.create(
-            model="gpt-3.5-turbo",messages=[{"role": "user", "content": prompt}]
-)
+    completion = _chat_completion(prompt)
     return completion.choices[0].message.content
 
 # ============================================================================
@@ -45,7 +91,7 @@ def ChatGPT_single_request(prompt):
 # ============================================================================
 
 
-def GPT4_request(prompt):
+def GPT4_request(prompt, model=None):
     """
   Given a prompt and a dictionary of GPT parameters, make a request to OpenAI
   server and returns the response. 
@@ -59,18 +105,10 @@ def GPT4_request(prompt):
   """
     temp_sleep()
     try:
-       
-        client = OpenAI(
-            api_key=openai_api_key
-            )
-        completion = client.chat.completions.create(
-            model="gpt-4",messages=[{"role": "user", "content": prompt}]
-)
-       # print(completion)
+        completion = _chat_completion(prompt, model=model or default_model)
         return completion.choices[0].message.content
-    except:
-        print("ChatGPT ERROR")
-        return "ChatGPT ERROR"
+    except Exception as e:
+        raise RuntimeError(f"ChatGPT ERROR: {e}")
 
 
 #@timeout(150)
@@ -86,40 +124,26 @@ def ChatGPT_request(prompt):
   RETURNS: 
     a str of GPT-3's response. 
   """
-    try:
-       # completion = openai.ChatCompletion.create(
-        #    model="gpt-3.5-turbo", messages=[{"role": "user", "content": prompt}]
-        #)
-        client = OpenAI(
-            api_key=openai_api_key
-            )
-        completion = client.chat.completions.create(
-            model="gpt-3.5-turbo",messages=[{"role": "user", "content": prompt}]
-)
-       # print(completion)
-        return completion.choices[0].message.content
-
-    except:
-        print("ChatGPT ERROR!")
-        return "ChatGPT ERROR"
+    completion = _chat_completion(prompt)
+    return completion.choices[0].message.content
 
 def GPT4o_images_request(prompt, image_url1, image_url2, image_url3 ):#
     try:
-        chat_completion = openai.chat.completions.create(
-              model="gpt-4o",
-              messages=[
+        client = _get_client()
+        chat_completion = client.chat.completions.create(
+            model=default_model,
+            messages=[
                 {
-                  "role": "user",
-                  "content": [
-                    {"type": "text", "text": prompt},
-                    {"type": "image_url","image_url": {"url": image_url1,},},
-                    {"type": "image_url","image_url": {"url": image_url2,},},
-                    {"type": "image_url","image_url": {"url": image_url3,},},
-                  ],
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": prompt},
+                        {"type": "image_url", "image_url": {"url": image_url1}},
+                        {"type": "image_url", "image_url": {"url": image_url2}},
+                        {"type": "image_url", "image_url": {"url": image_url3}},
+                    ],
                 }
-              ],
-              #max_tokens=300,
-            )
+            ],
+        )
         return chat_completion.choices[0].message.content
 
     except:
@@ -189,7 +213,7 @@ def ChatGPT_safe_generate_response(
     prompt,
     example_output,
     special_instruction,
-    repeat=3,
+    repeat=1,
     fail_safe_response="error",
     func_validate=None,
     func_clean_up=None,
@@ -211,37 +235,33 @@ def ChatGPT_safe_generate_response(
 
     for i in range(repeat):
         try:
-            #url1=trans_url("plot_stock.jpg")
-            #url1=trans_url("plot_stock2.jpg")
-            #curr_gpt_response =  GPT4o_3images_request(prompt, url1, url2, url3 ).strip()
-            curr_gpt_response = ChatGPT_request(prompt).strip()#.replace("\n","")
+            curr_gpt_response = ChatGPT_request(prompt).strip()
             curr_gpt_response = re.sub(r'\s{3,}', '\n', curr_gpt_response).replace("\n","\\n")
-            # curr_gpt_response = send_request(prompt)
-            #print("curr_gpt_response",curr_gpt_response)
-            end_index = curr_gpt_response.rfind("}") + 1
-            curr_gpt_response = curr_gpt_response[:end_index]
-            curr_gpt_response = json.loads(curr_gpt_response)["output"]
-
+            # Try to parse JSON; if it fails, fall back to raw content
+            try:
+                end_index = curr_gpt_response.rfind("}") + 1
+                parsed = json.loads(curr_gpt_response[:end_index])
+                curr_gpt_response = parsed.get("output", curr_gpt_response)
+            except Exception:
+                pass
 
             if verbose:
                 print("---GPT Response---")
                 print(curr_gpt_response)
                 print("---end of GPT Response---")
 
-            print(func_validate(curr_gpt_response, prompt=prompt))
+            if verbose:
+                print(func_validate(curr_gpt_response, prompt=prompt))
             if func_validate(curr_gpt_response, prompt=prompt):
                 return func_clean_up(curr_gpt_response, prompt=prompt)
 
             if verbose:
                 print("---- repeat count: \n", i, curr_gpt_response)
                 print(curr_gpt_response)
-                # temp_sleep(5)
-        # except eventlet.timeout.Timeout:
-        except:
-            print("GPT connection error, {}".format(Exception))
-            pass
+        except Exception as e:
+            print(f"GPT connection error: {e}")
 
-    #return False
+    return fail_safe_response
 
 
 
@@ -291,22 +311,10 @@ def GPT_request(prompt, gpt_parameter):
     a str of GPT-3's response. 
   """
     temp_sleep()
-    try:
-        response = openai.Completion.create(
-            model=gpt_parameter["engine"],
-            prompt=prompt,
-            temperature=gpt_parameter["temperature"],
-            max_tokens=gpt_parameter["max_tokens"],
-            top_p=gpt_parameter["top_p"],
-            frequency_penalty=gpt_parameter["frequency_penalty"],
-            presence_penalty=gpt_parameter["presence_penalty"],
-            stream=gpt_parameter["stream"],
-            stop=gpt_parameter["stop"],
-        )
-        return response.choices[0].text
-    except:
-        print("TOKEN LIMIT EXCEEDED")
-        return "TOKEN LIMIT EXCEEDED"
+    completion = _chat_completion(
+        prompt, model=gpt_parameter.get("engine", default_model)
+    )
+    return completion.choices[0].message.content
 
 
 def generate_prompt(curr_input, prompt_lib_file):
@@ -364,7 +372,9 @@ def get_embedding(text, model="text-embedding-ada-002"):
     text = text.replace("\n", " ")
     if not text:
         text = "this is blank"
-    return openai.Embedding.create(input=[text], model=model)["data"][0]["embedding"]
+    client = _get_client()
+    response = client.embeddings.create(input=[text], model=model)
+    return response.data[0].embedding
 
 
 if __name__ == "__main__":

@@ -53,7 +53,7 @@ class Database_operate:
         self._conn = sqlite3.connect("{}.db".format(self._db_name))
         self._cur = self._conn.cursor()
         cmdcre_op = (
-            "Create Table operations (timestamp Integer NOT NULL PRIMARY KEY, virtual_date text, "
+            "Create Table IF NOT EXISTS operations (timestamp Integer NOT NULL PRIMARY KEY, virtual_date text, "
             "weekday INTEGER, iteration INTEGER, choice text check(choice IN ('work','stock')),"
             "stock_id INTEGER, person_id INTEGER, action text check(action IN ('Sell','Buy')), "
             "price Numeric, quantity INTEGER, importance Integer)"

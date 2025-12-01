@@ -1,0 +1,5 @@
+person_id,virtual_date,cash,asset,wealth,work_income,capital_gain,daily_expense,principle
+-1,0,0,133680,133680,0,0,0,NA
+0,0,40000,0,40000,500,0,60,conservative
+0,1,39140,0,39140,500,0,860,conservative
+-1,1,860,133680,134540,0,0,0,NA

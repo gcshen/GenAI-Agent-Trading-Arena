@@ -1,0 +1,169 @@
+Instructions:
+- You are a player participating in a Simulated Stock Trading Challenge where the prices of stocks are determined mainly by the bids made by the participants in the challenge.
+- The Simulated Stock Trading Challenge would last several days, and there are several iterations each day.
+- Based on the trading activity over the past few days, you need to provide your recommendations for stock trading to maximize the return on investment.
+- You will receive specific operations for stocks, stock information, market information, investment strategy, and portfolio status for several consecutive days, along with your asset situation for the day, to assist you in making decisions. The information is in the next. 
+- You overall objective is to make as much profit as possible.
+
+
+Time:
+- Day: 3
+
+Facts:
+- You current financial situation:
+    - Your total cash is $38734.59, and your total wealth is $52208.94.
+    - Asset Situation:
+      Your total portfolio balance is $9293.26, you are holding the following stocks:
+        - A:
+            - You have held 9 shares of this stock
+            - the total portfolio value is $4057.92 the total capital gain is 1.00% PROFIT
+            - The prices in the past 5 days are: prices: [441.2, 437.8, 449.03, 451.58, 452.61]
+            - current price change: +0.18%, current price: $453.43, cost price: $450.88
+
+        - B:
+            - You have held 11 shares of this stock
+            - the total portfolio value is $5235.34 the total capital gain is 0.00% LOSS
+            - The prices in the past 5 days are: prices: [470.3, 460.75, 470.66, 472.59, 475.49]
+            - current price change: +0.37%, current price: $477.23, cost price: $475.94
+
+- The stocks that avaliable in the market were:
+    - market index change: Current market index change: -0.20%
+    
+    - A:
+        - The closing prices in the past 5 days are: [437.8, 449.03, 451.58, 452.61, 453.43]
+        - Dividend per share: $22
+        - Current price change: +0.18%, Current price: $453.43
+        - Intraday High：$453.43
+        - Intraday Low: $452.61
+        - Intraday Mean: $453.05
+
+    - B:
+        - The closing prices in the past 5 days are: [460.75, 470.66, 472.59, 475.49, 477.23]
+        - Dividend per share: $23
+        - Current price change: +0.37%, Current price: $477.23
+        - Intraday High：$477.23
+        - Intraday Low: $475.49
+        - Intraday Mean: $476.18
+
+    - C:
+        - The closing prices in the past 5 days are: [455.9, 443.58, 447.26, 445.16, 441.14]
+        - Dividend per share: $25
+        - Current price change: --0.90%, Current price: $441.14
+        - Intraday High：$445.16
+        - Intraday Low: $441.14
+        - Intraday Mean: $444.37
+
+
+Investment strategy for the day: Diversify across sectors by capping any single-stock position at 8% of portfolio and any sector at 30%, maintain a 10% cash reserve for opportunistic bids, use volatility-adjusted position sizing (smaller allocations for higher volatility), enforce automated stop-losses around 8% (or ~1.5×ATR) with trailing stops and partial profit-taking at ~10% and larger trims near 20%, rebalance every few iterations or immediately when the market index breaches short-term thresholds, and promptly reduce concentration if exposure limits are exceeded to control portfolio volatility.
+
+--------------------------------------------------------------
+Time:
+- Day: 2
+
+Facts:
+- You current financial situation:
+    - Your total cash is $46221.81, and your total wealth is $53087.58.
+    - Asset Situation:
+      Your total portfolio balance is $7661.54, you are holding the following stocks:
+        - C:
+            - You have held 2 shares of this stock
+            - the total portfolio value is $898.34 the total capital gain is 1.00% LOSS
+            - The prices in the past 5 days are: prices: [470.1, 465.25, 455.9, 443.58, 447.26]
+            - current price change: --0.55%, current price: $444.8, cost price: $449.17
+
+        - A:
+            - You have held 15 shares of this stock
+            - the total portfolio value is $6763.2 the total capital gain is 0.00% LOSS
+            - The prices in the past 5 days are: prices: [439.4, 441.2, 437.8, 449.03, 451.58]
+            - current price change: +0.26%, current price: $452.75, cost price: $450.88
+
+- The stocks that avaliable in the market were:
+    - market index change: Current market index change: -0.11%
+    
+    - A:
+        - The closing prices in the past 5 days are: [441.2, 437.8, 449.03, 451.58, 452.75]
+        - Dividend per share: $22
+        - Current price change: +0.26%, Current price: $452.75
+        - Intraday High：$452.75
+        - Intraday Low: $451.58
+        - Intraday Mean: $451.95
+
+    - B:
+        - The closing prices in the past 5 days are: [470.3, 460.75, 470.66, 472.59, 473.15]
+        - Dividend per share: $23
+        - Current price change: +0.12%, Current price: $473.15
+        - Intraday High：$473.15
+        - Intraday Low: $472.59
+        - Intraday Mean: $472.74
+
+    - C:
+        - The closing prices in the past 5 days are: [465.25, 455.9, 443.58, 447.26, 444.8]
+        - Dividend per share: $25
+        - Current price change: --0.55%, Current price: $444.8
+        - Intraday High：$447.26
+        - Intraday Low: $444.8
+        - Intraday Mean: $446.5
+
+
+Investment strategy for the day: Limit any single-stock position to a maximum of 10% of the portfolio and cap any single sector at 30%, keep a 5–10% cash buffer, hold exposures across at least four sector buckets using volatility-adjusted position sizing, apply hard stop-losses at ~8% (or 6% trailing stops) and take-profit rules at 15–25%, rebalance after each trading day or immediately if the market index moves >1% in an iteration, and prioritize liquid, high-volume names to minimize execution and concentration risk.
+
+--------------------------------------------------------------
+Time:
+- Day: 1
+
+Facts:
+- You current financial situation:
+    - Your total cash is $44449.0, and your total wealth is $53884.66.
+    - Asset Situation:
+      Your total portfolio balance is $10813.06, you are holding the following stocks:
+        - C:
+            - You have held 14 shares of this stock
+            - the total portfolio value is $6311.06 the total capital gain is 2.00% LOSS
+            - The prices in the past 5 days are: prices: [443.51, 470.1, 465.25, 455.9, 443.58]
+            - current price change: --0.02%, current price: $443.51, cost price: $450.79
+
+        - A:
+            - You have held 10 shares of this stock
+            - the total portfolio value is $4502.0 the total capital gain is 0.00% LOSS
+            - The prices in the past 5 days are: prices: [450.72, 439.4, 441.2, 437.8, 449.03]
+            - current price change: +0.38%, current price: $450.72, cost price: $450.2
+
+- The stocks that avaliable in the market were:
+    - market index change: Current market index change: 0.16%
+    
+    - A:
+        - The closing prices in the past 5 days are: [439.4, 441.2, 437.8, 449.03, 450.72]
+        - Dividend per share: $22
+        - Current price change: +0.38%, Current price: $450.72
+        - Intraday High：$450.72
+        - Intraday Low: $449.03
+        - Intraday Mean: $449.9
+
+    - B:
+        - The closing prices in the past 5 days are: [468.12, 470.3, 460.75, 470.66, 471.48]
+        - Dividend per share: $23
+        - Current price change: +0.17%, Current price: $471.48
+        - Intraday High：$471.48
+        - Intraday Low: $470.15
+        - Intraday Mean: $470.75
+
+    - C:
+        - The closing prices in the past 5 days are: [470.1, 465.25, 455.9, 443.58, 443.51]
+        - Dividend per share: $25
+        - Current price change: --0.02%, Current price: $443.51
+        - Intraday High：$445.27
+        - Intraday Low: $443.51
+        - Intraday Mean: $444.52
+
+
+Investment strategy for the day: At each iteration, cap any single-stock exposure at 12% of portfolio and enforce minimum diversification into at least four sectors, maintain an 8–10% cash buffer, apply volatility-adjusted position sizing (reduce new position sizes for high-volatility stocks), rebalance every 3 iterations or when any holding drifts more than 5% from target, set automatic stop-losses at 7% and trailing take-profits at 12% per position, and shift weight gradually toward sectors showing confirmed momentum while trimming positions that underperform across two consecutive rebalances.
+
+--------------------------------------------------------------
+
+Task: 
+- Only based on the following information of each day, you need to evaluate and draw conclusions regarding the suggestion of the latest investment strategy. You can refer to all the historical data to help with the current analysis. All evaluations of the latest investment strategy must show the specific crossponding evidences obtained from your investment return or loss:
+    - You financial situation 
+    - The market index 
+    - The status of all available stocks
+    - The status of all holding stocks
+    - You investment strategy

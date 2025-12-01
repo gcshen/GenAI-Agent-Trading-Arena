@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trading Arena Run Viewer</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .row { display: flex; gap: 20px; flex-wrap: wrap; }
+    .card { border: 1px solid #ddd; border-radius: 8px; padding: 12px; margin-bottom: 16px; flex: 1; min-width: 280px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    h1 { margin-top: 0; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid #eee; padding: 6px; text-align: left; }
+    th { background: #f5f5f5; }
+    .small { font-size: 12px; color: #555; }
+    .pill { display: inline-block; padding: 2px 8px; border-radius: 10px; background: #eef; margin-right: 6px; }
+    .error { color: red; }
+  </style>
+</head>
+<body>
+  <h1>Trading Arena Run Viewer</h1>
+  <div>
+    <label>Save name:</label>
+    <input id="saveInput" value="sim02" />
+    <button id="loadBtn">Load</button>
+    <span class="small">Run a local server from the repo root, e.g., <code>python -m http.server 8000</code> then open <code>http://localhost:8000/Agent-Trading-Arena/web/viewer/index.html</code></span>
+  </div>
+  <div id="status" class="small"></div>
+
+  <div class="row">
+    <div class="card">
+      <h3>View Controls</h3>
+      <div class="small">Pick a day/iteration to inspect decisions, orders, holdings.</div>
+      <div>
+        <label>Day (virtual_date):</label>
+        <input id="dayInput" type="number" value="0" style="width:80px"/>
+        <label>Iteration:</label>
+        <input id="iterInput" type="number" value="-1" style="width:60px"/>
+        <span class="small">(Iteration -1 = all)</span>
+        <button id="filterBtn">Update View</button>
+      </div>
+      <div style="margin-top:8px;">
+        <button id="startBtn">⏮ Start</button>
+        <button id="prevIterBtn">◀ Prev Iter</button>
+        <button id="nextIterBtn">Next Iter ▶</button>
+        <button id="nextDayBtn">Next Day ⏭</button>
+        <button id="endBtn">End ⏩</button>
+      </div>
+      <div id="timelineStatus" class="small"></div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="card" style="flex:2">
+      <h3>Price Trajectories</h3>
+      <canvas id="priceChart" height="120"></canvas>
+    </div>
+    <div class="card" style="flex:1">
+      <h3>Final Wealth (latest day)</h3>
+      <table id="wealthTable"></table>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="card">
+      <h3>Decisions (filtered)</h3>
+      <div id="decisions"></div>
+    </div>
+    <div class="card">
+      <h3>Orders & Market (filtered day)</h3>
+      <div id="orders"></div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="card">
+      <h3>Holdings (filtered day)</h3>
+      <div id="holdings"></div>
+    </div>
+    <div class="card">
+      <h3>Prices (filtered day)</h3>
+      <div id="dayPrices"></div>
+    </div>
+  </div>
+
+  <script>
+    const statusEl = document.getElementById('status');
+    const priceChartCtx = document.getElementById('priceChart').getContext('2d');
+    let priceChart;
+    let globalData = null;
+    let timeline = { days: [], dayMaxIter: {} };
+
+    async function loadRun(saveName) {
+      statusEl.textContent = 'Loading...';
+      const pathParts = window.location.pathname.split('/').filter(Boolean);
+      const webIdx = pathParts.indexOf('web');
+      let dynamicBase = './Stock_Main/save';
+      if (webIdx > 0) {
+        const prefix = '/' + pathParts.slice(0, webIdx).join('/');
+        dynamicBase = `${prefix}/Stock_Main/save`;
+      }
+      const basePaths = [
+        dynamicBase,
+        '/Agent-Trading-Arena/Stock_Main/save',
+        '../Stock_Main/save',
+        '../../Stock_Main/save',
+        'Stock_Main/save',
+        './Stock_Main/save'
+      ];
+      const tried = [];
+      for (const base of basePaths) {
+        const url = `${base}/${saveName}/summary.json`;
+        tried.push(url);
+        try {
+          const res = await fetch(url);
+          if (!res.ok) throw new Error(`Failed to fetch ${url}: ${res.status}`);
+          const data = await res.json();
+          statusEl.textContent = `Loaded ${saveName} via ${url}`;
+          render(data);
+          return;
+        } catch (err) {
+          console.warn(err);
+        }
+      }
+      statusEl.innerHTML = `<span class="error">Failed to fetch summary.json. Tried: ${tried.join(', ')}.<br/>Hint: serve from repo root (e.g., \`python -m http.server 8000\` in repo root) and open http://localhost:8000/Agent-Trading-Arena/web/viewer/index.html</span>`;
+    }
+
+    function renderPriceChart(stockTable) {
+      const cols = stockTable.columns;
+      const rows = stockTable.rows;
+      const dateIdx = cols.indexOf("virtual_date");
+      const stockIdx = cols.indexOf("stock_id");
+      const priceIdx = cols.indexOf("last_price");
+      const series = {};
+      rows.forEach(r => {
+        const sid = r[stockIdx];
+        if (sid < 0) return;
+        if (!series[sid]) series[sid] = { labels: [], data: [] };
+        series[sid].labels.push(r[dateIdx]);
+        series[sid].data.push(r[priceIdx]);
+      });
+      const datasets = Object.entries(series).map(([sid, s]) => ({
+        label: `Stock ${sid}`,
+        data: s.data,
+        tension: 0.2,
+        fill: false,
+        borderWidth: 2
+      }));
+      const labels = Object.values(series)[0]?.labels || [];
+      if (priceChart) priceChart.destroy();
+      priceChart = new Chart(priceChartCtx, {
+        type: 'line',
+        data: { labels, datasets },
+        options: { plugins: { legend: { position: 'bottom' } }, scales: { x: { title: { display: true, text: 'virtual_date'}}, y: { title: { display: true, text: 'last_price'}}}}
+      });
+    }
+
+    function renderWealth(personTable) {
+      const cols = personTable.columns;
+      const rows = personTable.rows;
+      const dateIdx = cols.indexOf("virtual_date");
+      const pidIdx = cols.indexOf("person_id");
+      const wealthIdx = cols.indexOf("wealth");
+      const cashIdx = cols.indexOf("cash");
+      const assetIdx = cols.indexOf("asset");
+      const principleIdx = cols.indexOf("principle");
+      const maxDate = Math.max(...rows.map(r => r[dateIdx]));
+      const latest = rows.filter(r => r[dateIdx] === maxDate && r[pidIdx] >= 0);
+      latest.sort((a,b) => b[wealthIdx] - a[wealthIdx]);
+      const html = [
+        `<tr><th>Person</th><th>Wealth</th><th>Cash</th><th>Asset</th><th>Principle</th></tr>`,
+        ...latest.map(r => `<tr><td>${r[pidIdx]}</td><td>${r[wealthIdx].toFixed(2)}</td><td>${r[cashIdx].toFixed(2)}</td><td>${r[assetIdx].toFixed(2)}</td><td>${r[principleIdx]}</td></tr>`)
+      ].join('');
+      document.getElementById('wealthTable').innerHTML = html;
+    }
+
+    function renderDecisions(memoryTable) {
+      const cols = memoryTable.columns;
+      const rows = memoryTable.rows;
+      const fields = ["virtual_date","iteration","person_id","stock_operations","strategy","financial_situation","stock_prices"];
+      const idx = Object.fromEntries(fields.map(f => [f, cols.indexOf(f)]));
+      const latest = rows.slice(-10).reverse();
+      const html = latest.map(r => {
+        return `<div class="pill">Day ${r[idx.virtual_date]} / Iter ${r[idx.iteration]}</div>` +
+               `<div class="small">Person ${r[cols.indexOf("person_id")]}</div>` +
+               `<div><strong>${r[idx.stock_operations]}</strong></div>` +
+               `<div class="small">${r[idx.stock_prices]}</div><hr/>`;
+      }).join('');
+      document.getElementById('decisions').innerHTML = html || 'No memory records';
+    }
+
+    function renderOrders(activeTable) {
+      const cols = activeTable.columns;
+      const rows = activeTable.rows;
+      const statusIdx = cols.indexOf("status");
+      const typeIdx = cols.indexOf("type");
+      const counts = rows.reduce((acc,r) => {
+        acc[r[typeIdx]] = (acc[r[typeIdx]]||0)+1;
+        acc[r[statusIdx]] = (acc[r[statusIdx]]||0)+1;
+        return acc;
+      }, {});
+      const html = Object.entries(counts).map(([k,v]) => `<div>${k}: ${v}</div>`).join('');
+      document.getElementById('orders').innerHTML = html || 'No orders';
+    }
+
+    function renderHoldings(accountTable, day, stocks) {
+        const cols = accountTable.columns;
+        const rows = accountTable.rows.filter(r => r[cols.indexOf("virtual_date")] === day && r[cols.indexOf("person_id")] >= 0 && r[cols.indexOf("quantity")] > 0);
+        if (!rows.length) { document.getElementById('holdings').innerHTML = 'No holdings for this day'; return; }
+        const headers = ["person_id","stock_id","quantity","cost_price","current_price","profit"];
+        const idx = Object.fromEntries(headers.map(h => [h, cols.indexOf(h)]));
+        const html = [
+          `<table><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr>`,
+          ...rows.map(r => `<tr>${headers.map(h=>`<td>${Number(r[idx[h]]).toFixed ? Number(r[idx[h]]).toFixed(2) : r[idx[h]]}</td>`).join('')}</tr>`),
+          `</table>`
+        ].join('');
+        document.getElementById('holdings').innerHTML = html;
+    }
+
+    function renderDayPrices(stockTable, day) {
+      const cols = stockTable.columns;
+      const rows = stockTable.rows.filter(r => r[cols.indexOf("virtual_date")] === day && r[cols.indexOf("stock_id")] >= 0);
+      if (!rows.length) { document.getElementById('dayPrices').innerHTML = 'No price rows for this day'; return; }
+      const headers = ["stock_id","begin_price","last_price","highest_price","lowest_price","volume","quantity"];
+      const idx = Object.fromEntries(headers.map(h => [h, cols.indexOf(h)]));
+      const html = [
+        `<table><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr>`,
+        ...rows.map(r => `<tr>${headers.map(h=>`<td>${Number(r[idx[h]]).toFixed ? Number(r[idx[h]]).toFixed(2) : r[idx[h]]}</td>`).join('')}</tr>`),
+        `</table>`
+      ].join('');
+      document.getElementById('dayPrices').innerHTML = html;
+    }
+
+    function render(data) {
+      globalData = data;
+      const tables = data.tables;
+      if (tables.stock) renderPriceChart(tables.stock);
+      if (tables.person) renderWealth(tables.person);
+      buildTimeline();
+      // initial filter: latest day, latest iter
+      const maxDay = timeline.days[timeline.days.length - 1];
+      const maxIter = timeline.dayMaxIter[maxDay] ?? 0;
+      document.getElementById('dayInput').value = maxDay ?? 0;
+      document.getElementById('iterInput').value = maxIter;
+      applyFilters();
+    }
+
+    function applyFilters() {
+      if (!globalData) return;
+      const day = Number(document.getElementById('dayInput').value);
+      const iter = Number(document.getElementById('iterInput').value);
+      const tables = globalData.tables;
+      if (tables.memory) renderDecisionsFiltered(tables.memory, day, iter);
+      if (tables.active_orders) renderOrdersFiltered(tables.active_orders, day);
+      if (tables.account) renderHoldings(tables.account, day, tables.stock);
+      if (tables.stock) renderDayPrices(tables.stock, day);
+    }
+
+    function renderDecisionsFiltered(memoryTable, day, iter) {
+      const cols = memoryTable.columns;
+      let rows = memoryTable.rows.filter(r => r[cols.indexOf("virtual_date")] === day);
+      if (iter >= 0) rows = rows.filter(r => r[cols.indexOf("iteration")] === iter);
+      rows = rows.slice(-20).reverse(); // show latest 20 in that filter
+      const html = rows.map(r => {
+        const pid = r[cols.indexOf("person_id")];
+        const stockOp = r[cols.indexOf("stock_operations")];
+        const analysis = r[cols.indexOf("analysis_for_stocks")];
+        const fin = r[cols.indexOf("financial_situation")];
+        const gossip = cols.indexOf("gossip") >=0 ? r[cols.indexOf("gossip")] : '';
+        const iterVal = r[cols.indexOf("iteration")];
+        const stockOpFmt = stockOp.replace(/(\$?)(\d+(\.\d+)?)/g, (m,p1,p2)=> `${p1}${parseFloat(p2).toFixed(2)}`);
+        return `<div class="pill">Day ${day} / Iter ${iterVal} / P${pid}</div><div><strong>${stockOpFmt}</strong></div><div class="small"><em>Analysis:</em> ${analysis || ''}</div><div class="small"><em>Financial:</em> ${fin || ''}</div><div class="small"><em>Gossip:</em> ${gossip || ''}</div><hr/>`;
+      }).join('');
+      document.getElementById('decisions').innerHTML = html || 'No decisions for this filter';
+    }
+
+    function renderOrdersFiltered(activeTable, day) {
+      const cols = activeTable.columns;
+      const rows = activeTable.rows.filter(r => r[cols.indexOf("virtual_date")] === day);
+      if (!rows.length) { document.getElementById('orders').innerHTML = 'No orders for this day'; return; }
+      const headers = ["timestamp","iteration","stock_id","person_id","type","price","quantity","status"];
+      const idx = Object.fromEntries(headers.map(h => [h, cols.indexOf(h)]));
+      const html = [
+        `<div class="small">Rows: ${rows.length}</div>`,
+        `<table><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr>`,
+        ...rows.slice(-50).reverse().map(r => `<tr>${headers.map(h=>`<td>${Number(r[idx[h]]).toFixed ? Number(r[idx[h]]).toFixed(2) : r[idx[h]]}</td>`).join('')}</tr>`),
+        `</table>`
+      ].join('');
+      document.getElementById('orders').innerHTML = html;
+    }
+
+    document.getElementById('loadBtn').addEventListener('click', () => {
+      const save = document.getElementById('saveInput').value.trim();
+      if (save) loadRun(save);
+    });
+
+    document.getElementById('filterBtn').addEventListener('click', () => applyFilters());
+
+    function buildTimeline() {
+      const stock = globalData.tables.stock;
+      const mem = globalData.tables.memory;
+      const orders = globalData.tables.active_orders;
+      const daySet = new Set(stock.rows.map(r => r[stock.columns.indexOf("virtual_date")]));
+      timeline.days = Array.from(daySet).sort((a,b)=>a-b);
+      timeline.dayMaxIter = {};
+      const updateMax = (rows, cols) => {
+        const dIdx = cols.indexOf("virtual_date");
+        const iIdx = cols.indexOf("iteration");
+        rows.forEach(r => {
+          const d = r[dIdx];
+          const it = iIdx >=0 ? (Number(r[iIdx]) || 0) : 0;
+          if (!timeline.dayMaxIter.hasOwnProperty(d) || it > timeline.dayMaxIter[d]) {
+            timeline.dayMaxIter[d] = it;
+          }
+        });
+      };
+      if (mem) updateMax(mem.rows, mem.columns);
+      if (orders) updateMax(orders.rows, orders.columns);
+      // default max iter 0 if missing
+      timeline.days.forEach(d => { if (!timeline.dayMaxIter.hasOwnProperty(d)) timeline.dayMaxIter[d] = 0; });
+      timelineStatus();
+    }
+
+    function timelineStatus() {
+      const d = Number(document.getElementById('dayInput').value);
+      const i = Number(document.getElementById('iterInput').value);
+      const maxIter = timeline.dayMaxIter[d] ?? -1;
+      document.getElementById('timelineStatus').textContent = `Day ${d} / Iter ${i} (max iter day ${d}: ${maxIter})`;
+    }
+
+    function normIter(day, iter) {
+      const maxIter = timeline.dayMaxIter[day] ?? 0;
+      if (isNaN(iter) || iter < 0) return 0;
+      return Math.min(iter, maxIter);
+    }
+
+    function setDayIter(day, iter) {
+      document.getElementById('dayInput').value = day;
+      document.getElementById('iterInput').value = normIter(day, iter);
+      timelineStatus();
+      applyFilters();
+    }
+
+    function nextIter() {
+      if (!timeline.days.length) return;
+      let day = Number(document.getElementById('dayInput').value);
+      let iter = Number(document.getElementById('iterInput').value);
+      iter = normIter(day, iter);
+      const maxIter = timeline.dayMaxIter[day] ?? 0;
+      if (iter < maxIter) {
+        setDayIter(day, iter + 1);
+        return;
+      }
+      const idx = timeline.days.indexOf(day);
+      if (idx >= 0 && idx < timeline.days.length -1) {
+        const nd = timeline.days[idx+1];
+        setDayIter(nd, 0);
+      }
+    }
+
+    function prevIter() {
+      if (!timeline.days.length) return;
+      let day = Number(document.getElementById('dayInput').value);
+      let iter = Number(document.getElementById('iterInput').value);
+      iter = normIter(day, iter);
+      if (iter > 0) {
+        setDayIter(day, iter -1);
+      } else {
+        const idx = timeline.days.indexOf(day);
+        if (idx > 0) {
+          const pd = timeline.days[idx-1];
+          const pi = timeline.dayMaxIter[pd] ?? 0;
+          setDayIter(pd, pi);
+        }
+      }
+    }
+
+    function nextDay() {
+      if (!timeline.days.length) return;
+      let day = Number(document.getElementById('dayInput').value);
+      const idx = timeline.days.indexOf(day);
+      if (idx >=0 && idx < timeline.days.length -1) {
+        const nd = timeline.days[idx+1];
+        setDayIter(nd, 0);
+      }
+    }
+
+    function startTimeline() {
+      if (!timeline.days.length) return;
+      const d0 = timeline.days[0];
+      setDayIter(d0, 0);
+    }
+
+    function endTimeline() {
+      if (!timeline.days.length) return;
+      const d = timeline.days[timeline.days.length -1];
+      const i = timeline.dayMaxIter[d] ?? 0;
+      setDayIter(d, i);
+    }
+
+    document.getElementById('nextIterBtn').addEventListener('click', nextIter);
+    document.getElementById('prevIterBtn').addEventListener('click', prevIter);
+    document.getElementById('nextDayBtn').addEventListener('click', nextDay);
+    document.getElementById('startBtn').addEventListener('click', startTimeline);
+    document.getElementById('endBtn').addEventListener('click', endTimeline);
+
+    // auto-load default
+    loadRun(document.getElementById('saveInput').value);
+  </script>
+</body>
+</html>

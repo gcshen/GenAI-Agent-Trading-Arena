@@ -1,5 +1,4 @@
 import datetime
-import numpy as np
 import sqlite3
 import json
 import time
@@ -30,6 +29,8 @@ class Market:
     def end_of_market(self, virtual_date, args):
         # put all the rest active order traded by the broker.
         all_orders = self._fetch_orders("all", -1)  # fetch all active orders
+        if getattr(args, "verbose", False):
+            print(f"    [EndOfMarket] remaining active orders: {len(all_orders)}")
        # print("end_of_market all_orders:",all_orders)
         for each_order in all_orders:
             stock_id = each_order["stock_id"]
@@ -97,6 +98,8 @@ class Market:
         for stock_iter in range(len(self.stocks)):
             buy_orders = self._fetch_orders("buy", stock_iter)
             sell_orders = self._fetch_orders("sell", stock_iter)
+            if getattr(args, "verbose", False):
+                print(f"    [Match] stock {stock_iter}: buys={len(buy_orders)} sells={len(sell_orders)}")
             # start to match order
             cur_stock_price = self.stocks[stock_iter].current_price
             total_quantity = self.stocks[stock_iter].quantity

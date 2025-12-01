@@ -1,6 +1,5 @@
 import re
 import random
-import numpy as np
 from pathlib import Path
 import os, sys
 
@@ -22,7 +21,7 @@ def init_paths(**kwargs):
 def integrate_gossip(virtual_date, persona, gossip_num_max):
     all_gossip = ""
     gossip = persona.query_gossip(virtual_date)
-    gossip_num = np.random.randint(0, gossip_num_max + 1)
+    gossip_num = random.randint(0, gossip_num_max)
     if gossip_num == 0:
         all_gossip = "None"
     else:
@@ -173,7 +172,7 @@ def update_strategy(virtual_date, persona, w_s, suggestion):
         return prompt_input
 
     def get_fail_safe():
-        return "error"
+        return False
 
     def __chat_func_clean_up(gpt_response, prompt=""):
         return gpt_response
@@ -205,19 +204,17 @@ def update_strategy(virtual_date, persona, w_s, suggestion):
         prompt,
         example_output,
         special_instruction,
-        100,
+        1,
         fail_safe,
         __chat_func_validate,
         __chat_func_clean_up,
-        True,
+        False,
     )
-    #print("output:",output)
-    if output is not False:
-        # with open("relect_result.txt", "w") as file: ##BUG
-        with open(_paths.PROMPT_PATH.joinpath("reflect_result.txt"), "w") as file:
-            file.write(output)
-        #print(output)
-        return output
+    if output is False:
+        output = "New investment strategy: keep current strategy."
+    with open(_paths.PROMPT_PATH.joinpath("reflect_result.txt"), "w") as file:
+        file.write(output)
+    return output
 
 def integrate_long_reflect_info(virtual_date, persona:Person):
     iteration=0
@@ -271,7 +268,7 @@ def long_reflect(virtual_date, persona):
         return prompt_input
 
     def get_fail_safe():
-        return "error"
+        return False
 
     def __chat_func_clean_up(gpt_response, prompt=""):
         return gpt_response
@@ -298,17 +295,17 @@ def long_reflect(virtual_date, persona):
         prompt,
         example_output,
         special_instruction,
-        100,
+        1,
         fail_safe,
         __chat_func_validate,
         __chat_func_clean_up,
-        True,
+        False,
     )
-    if output is not False:
-        with open(_paths.PROMPT_PATH.joinpath("long_pre_reflect_suggestion_result.txt"), "w") as file:
-            file.write(output)
-        # print(output)
-        return output
+    if output is False:
+        output = "Suggestions for a new investment strategy: None."
+    with open(_paths.PROMPT_PATH.joinpath("long_pre_reflect_suggestion_result.txt"), "w") as file:
+        file.write(output)
+    return output
 
 def pre_reflect(virtual_date, persona):
     def create_prompt_input(virtual_date, persona):
@@ -319,7 +316,7 @@ def pre_reflect(virtual_date, persona):
         return prompt_input
 
     def get_fail_safe():
-        return "error"
+        return False
 
     def __chat_func_clean_up(gpt_response, prompt=""):
         return gpt_response
@@ -350,17 +347,17 @@ def pre_reflect(virtual_date, persona):
         prompt,
         example_output,
         special_instruction,
-        100,
+        1,
         fail_safe,
         __chat_func_validate,
         __chat_func_clean_up,
-        True,
+        False,
     )
-    if output is not False:
-        with open(_paths.PROMPT_PATH.joinpath("pre_reflect_result.txt"), "w") as file:
-            file.write(output)
-        # print(output)
-        return output
+    if output is False:
+        output = "Weakness: None. Strength: None"
+    with open(_paths.PROMPT_PATH.joinpath("pre_reflect_result.txt"), "w") as file:
+        file.write(output)
+    return output
 
 
 def run_gpt_generate_gossip(virtual_date, persona):
@@ -372,7 +369,7 @@ def run_gpt_generate_gossip(virtual_date, persona):
         return prompt_input
 
     def get_fail_safe():
-        return "error"
+        return False
 
     def __chat_func_clean_up(gpt_response, prompt=""):
         return gpt_response
@@ -398,16 +395,15 @@ def run_gpt_generate_gossip(virtual_date, persona):
         prompt,
         example_output,
         special_instruction,
-        100,
+        1,
         fail_safe,
         __chat_func_validate,
         __chat_func_clean_up,
-        True,
+        False,
     )
-   # print("output:",output)
-    if output is not False:
-        #print(output)
-        return output
+    if output is False:
+        output = "None"
+    return output
 
 
 def analysis(virtual_date, persona, stocks_list, market_index, analysis_num, gossip_num_max):
@@ -429,7 +425,7 @@ def analysis(virtual_date, persona, stocks_list, market_index, analysis_num, gos
         return prompt_input, gossip
 
     def get_fail_safe():
-        return "error"
+        return False
 
     def __chat_func_clean_up(gpt_response, prompt=""):
         gpt_response = gpt_response.replace("The analysis results: \n", "")
@@ -438,15 +434,12 @@ def analysis(virtual_date, persona, stocks_list, market_index, analysis_num, gos
 
     def __chat_func_validate(gpt_response, prompt=""):
         try:
-            match = re.search(
-                r'^The analysis results:\s*(?:\n-\s*.+)+$',
-                gpt_response, re.MULTILINE)
-            if match:
-                matched_string = match.group()
-                lines = matched_string.strip().split('\n')
-                num_items = len(lines) - 1
-                if num_items == analysis_num:
-                    return True
+            processed = gpt_response.replace("\\n", "\n")
+            line_bullets = [ln for ln in processed.splitlines() if ln.strip().startswith("-")]
+            if len(line_bullets) == analysis_num:
+                return True
+            dash_bullets = re.findall(r"-\\s", processed)
+            return len(dash_bullets) == analysis_num
         except Exception:
             return False
 
@@ -467,16 +460,15 @@ def analysis(virtual_date, persona, stocks_list, market_index, analysis_num, gos
         prompt,
         example_output,
         special_instruction,
-        50,
+        1,
         fail_safe,
         __chat_func_validate,
         __chat_func_clean_up,
-        True,
+        False,
     )
-    #print("output",output)
-    if output is not False:
-        # print(output)
-        return output, gossip
+    if output is False:
+        output = "The analysis results:\n- hold\n- hold\n- hold"
+    return output, gossip
 
 
 def run_gpt_prompt_choose_buy_stock(virtual_date, persona, stocks_list, analysis_results):
@@ -492,7 +484,7 @@ def run_gpt_prompt_choose_buy_stock(virtual_date, persona, stocks_list, analysis
         return prompt_input
 
     def get_fail_safe():
-        return "error"
+        return False
 
     def __chat_func_clean_up(gpt_response, prompt=""):
         gpt_response = gpt_response.strip("[]").split("], [")
@@ -512,7 +504,7 @@ def run_gpt_prompt_choose_buy_stock(virtual_date, persona, stocks_list, analysis
         except Exception:
             return False
 
-    if persona.cash < persona.identity["minimum_living_expense"] * 10:
+    if persona.cash < persona.identity["minimum_living_expense"] * 2:
         return "Operation: hold"
 
     prompt_template = _paths.PROMPT_PATH.joinpath("buy_based_on_analysis.txt")
@@ -533,15 +525,15 @@ def run_gpt_prompt_choose_buy_stock(virtual_date, persona, stocks_list, analysis
         prompt,
         example_output,
         special_instruction,
-        100,
+        1,
         fail_safe,
         __chat_func_validate,
         __chat_func_clean_up,
-        True,
+        False,
     )#gpt_response or false
-    if output is not False:
-        #print(output)
-        return output[0]
+    if output is False:
+        return "Operation: hold"
+    return output[0]
 
 
 def run_gpt_prompt_choose_sell_stock(
@@ -558,7 +550,7 @@ def run_gpt_prompt_choose_sell_stock(
         return prompt_input
 
     def get_fail_safe():
-        return "error"
+        return False
 
     def __chat_func_clean_up(gpt_response, prompt=""):
         gpt_response = gpt_response.strip("[]").split("], [")
@@ -603,15 +595,15 @@ def run_gpt_prompt_choose_sell_stock(
         prompt,
         example_output,
         special_instruction,
-        100,
+        1,
         fail_safe,
         __chat_func_validate,
         __chat_func_clean_up,
-        True,
+        False,
     )
-    if output is not False:
-        #print(output)
-        return output[0]
+    if output is False:
+        return "Operation: hold"
+    return output[0]
 
 
 

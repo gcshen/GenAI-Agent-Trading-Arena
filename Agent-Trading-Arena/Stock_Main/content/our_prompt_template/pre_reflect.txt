@@ -7,168 +7,174 @@ Instructions:
 
 
 Time:
-- Day: 8
+- Day: 3
 
 Facts:
 - You current financial situation:
-    - Your total cash is $1859.8, and your total wealth is $73310.39.
+    - Your total cash is $25796.81, and your total wealth is $59328.87.
     - Asset Situation:
-      Your total portfolio balance is $69907.90, you are holding the following stocks:
+      Your total portfolio balance is $29282.04, you are holding the following stocks:
         - B:
-            - You have held 29 shares of this stock
-            - the total portfolio value is $14587 the total capital gain is 2.00% PROFIT
-            - The prices in the past 5 days are: prices: [497.37, 502.05, 497.88, 499.57, 513.45]
-            - current price change: --0.22%, current price: $512.31, cost price: $503
+            - You have held 24 shares of this stock
+            - the total portfolio value is $11304.48 the total capital gain is 1.00% PROFIT
+            - The prices in the past 5 days are: prices: [470.3, 460.75, 470.66, 472.59, 475.49]
+            - current price change: +0.37%, current price: $477.23, cost price: $471.02
+
+        - A:
+            - You have held 26 shares of this stock
+            - the total portfolio value is $11709.62 the total capital gain is 1.00% PROFIT
+            - The prices in the past 5 days are: prices: [441.2, 437.8, 449.03, 451.58, 452.61]
+            - current price change: +0.18%, current price: $453.43, cost price: $450.37
 
         - C:
-            - You have held 122 shares of this stock
-            - the total portfolio value is $55320.9 the total capital gain is 1.00% PROFIT
-            - The prices in the past 5 days are: prices: [443.86, 452.25, 460.57, 461.58, 465.17]
-            - current price change: --1.71%, current price: $457.2, cost price: $453.45
+            - You have held 14 shares of this stock
+            - the total portfolio value is $6267.94 the total capital gain is 1.00% LOSS
+            - The prices in the past 5 days are: prices: [465.25, 455.9, 443.58, 447.26, 445.16]
+            - current price change: --0.90%, current price: $441.14, cost price: $447.71
 
 - The stocks that avaliable in the market were:
-    - market index change: Current market index change: -0.61%
+    - market index change: Current market index change: -0.20%
     
     - A:
-        - The closing prices in the past 5 days are: [462.19, 460.87, 456.48, 454.43, 456.69]
+        - The closing prices in the past 5 days are: [437.8, 449.03, 451.58, 452.61, 453.43]
         - Dividend per share: $22
-        - Current price change: +0.50%, Current price: $456.69
-        - Intraday High：$456.69
-        - Intraday Low: $454.43
-        - Intraday Mean: $455.7
+        - Current price change: +0.18%, Current price: $453.43
+        - Intraday High：$453.43
+        - Intraday Low: $452.61
+        - Intraday Mean: $453.05
 
     - B:
-        - The closing prices in the past 5 days are: [502.05, 497.88, 499.57, 513.45, 512.31]
+        - The closing prices in the past 5 days are: [460.75, 470.66, 472.59, 475.49, 477.23]
         - Dividend per share: $23
-        - Current price change: --0.22%, Current price: $512.31
-        - Intraday High：$514
-        - Intraday Low: $512.31
-        - Intraday Mean: $513.54
+        - Current price change: +0.37%, Current price: $477.23
+        - Intraday High：$477.23
+        - Intraday Low: $475.49
+        - Intraday Mean: $476.18
 
     - C:
-        - The closing prices in the past 5 days are: [452.25, 460.57, 461.58, 465.17, 457.2]
+        - The closing prices in the past 5 days are: [455.9, 443.58, 447.26, 445.16, 441.14]
         - Dividend per share: $25
-        - Current price change: --1.71%, Current price: $457.2
-        - Intraday High：$465.18
-        - Intraday Low: $457.2
-        - Intraday Mean: $462.67
+        - Current price change: --0.90%, Current price: $441.14
+        - Intraday High：$445.16
+        - Intraday Low: $441.14
+        - Intraday Mean: $444.37
 
 
-Investment strategy for the day: Diversify the portfolio by investing in a mix of high-performing stocks across different sectors, monitor market trends closely, adjust holdings accordingly, reevaluate risk management strategies, and set stop-loss orders to mitigate losses.
+Investment strategy for the day: Maintain broad diversification by capping any single-stock holding at 10% of portfolio and any sector at 30%, keep a 10–15% cash buffer for opportunities, apply an 8% trailing stop on winners and a 12% hard stop on new purchases, rebalance when allocations drift more than 5% or at each iteration if the market index moves by over 0.3% (reduce equity exposure by 5% on sustained down-trends and increase by 5% on sustained up-trends), and scale into favored positions in four equal tranches (25% per iteration) to limit concentration while preserving the ability to react quickly.
 
 --------------------------------------------------------------
 Time:
-- Day: 7
+- Day: 2
 
 Facts:
 - You current financial situation:
-    - Your total cash is $1807.62, and your total wealth is $71587.73.
+    - Your total cash is $32216.39, and your total wealth is $59311.46.
     - Asset Situation:
-      Your total portfolio balance is $68429.19, you are holding the following stocks:
+      Your total portfolio balance is $22365.60, you are holding the following stocks:
+        - B:
+            - You have held 18 shares of this stock
+            - the total portfolio value is $8447.04 the total capital gain is 1.00% PROFIT
+            - The prices in the past 5 days are: prices: [468.12, 470.3, 460.75, 470.66, 472.59]
+            - current price change: +0.12%, current price: $473.15, cost price: $469.28
+
+        - A:
+            - You have held 19 shares of this stock
+            - the total portfolio value is $8540.88 the total capital gain is 1.00% PROFIT
+            - The prices in the past 5 days are: prices: [439.4, 441.2, 437.8, 449.03, 451.58]
+            - current price change: +0.26%, current price: $452.75, cost price: $449.52
+
+        - C:
+            - You have held 12 shares of this stock
+            - the total portfolio value is $5377.68 the total capital gain is 1.00% LOSS
+            - The prices in the past 5 days are: prices: [470.1, 465.25, 455.9, 443.58, 447.26]
+            - current price change: --0.55%, current price: $444.8, cost price: $448.14
+
+- The stocks that avaliable in the market were:
+    - market index change: Current market index change: -0.11%
+    
+    - A:
+        - The closing prices in the past 5 days are: [441.2, 437.8, 449.03, 451.58, 452.75]
+        - Dividend per share: $22
+        - Current price change: +0.26%, Current price: $452.75
+        - Intraday High：$452.75
+        - Intraday Low: $451.58
+        - Intraday Mean: $451.95
+
+    - B:
+        - The closing prices in the past 5 days are: [470.3, 460.75, 470.66, 472.59, 473.15]
+        - Dividend per share: $23
+        - Current price change: +0.12%, Current price: $473.15
+        - Intraday High：$473.15
+        - Intraday Low: $472.59
+        - Intraday Mean: $472.74
+
+    - C:
+        - The closing prices in the past 5 days are: [465.25, 455.9, 443.58, 447.26, 444.8]
+        - Dividend per share: $25
+        - Current price change: --0.55%, Current price: $444.8
+        - Intraday High：$447.26
+        - Intraday Low: $444.8
+        - Intraday Mean: $446.5
+
+
+Investment strategy for the day: Maintain a diversified portfolio of 4–6 sector-different holdings with position sizes capped at 20% and sector exposure capped at 40%, hold a 10–15% cash buffer, apply an 8% initial stop-loss per position with a 10% trailing stop and 20% take-profit guide, rebalance weekly to target weights and trim any position or sector that breaches caps, shift 10–25% of equity to cash/hedges if the market index drops >3% in a day or >5% over a week, and rotate into momentum- and value-screened winners while keeping at least two defensive/low-volatility positions to reduce portfolio volatility.
+
+--------------------------------------------------------------
+Time:
+- Day: 1
+
+Facts:
+- You current financial situation:
+    - Your total cash is $32853.77, and your total wealth is $59315.59.
+    - Asset Situation:
+      Your total portfolio balance is $16545.38, you are holding the following stocks:
         - B:
             - You have held 19 shares of this stock
-            - the total portfolio value is $9467.89 the total capital gain is 2.00% PROFIT
-            - The prices in the past 5 days are: prices: [488.0, 497.37, 502.05, 497.88, 499.57]
-            - current price change: +1.67%, current price: $507.89, cost price: $498.31
-
-        - C:
-            - You have held 105 shares of this stock
-            - the total portfolio value is $47434.8 the total capital gain is 2.00% PROFIT
-            - The prices in the past 5 days are: prices: [444.34, 443.86, 452.25, 460.57, 461.58]
-            - current price change: +0.16%, current price: $462.32, cost price: $451.76
+            - the total portfolio value is $8916.32 the total capital gain is 0.00% LOSS
+            - The prices in the past 5 days are: prices: [471.48, 468.12, 470.3, 460.75, 470.66]
+            - current price change: +0.17%, current price: $471.48, cost price: $469.28
 
         - A:
-            - You have held 25 shares of this stock
-            - the total portfolio value is $11526.5 the total capital gain is 1.00% LOSS
-            - The prices in the past 5 days are: prices: [463.54, 468.89, 462.19, 460.87, 456.48]
-            - current price change: +0.15%, current price: $457.15, cost price: $461.06
-
-- The stocks that avaliable in the market were:
-    - market index change: Current market index change: 0.59%
-    
-    - A:
-        - The closing prices in the past 5 days are: [468.89, 462.19, 460.87, 456.48, 457.15]
-        - Dividend per share: $22
-        - Current price change: +0.15%, Current price: $457.15
-        - Intraday High：$457.15
-        - Intraday Low: $456.48
-        - Intraday Mean: $456.7
-
-    - B:
-        - The closing prices in the past 5 days are: [497.37, 502.05, 497.88, 499.57, 507.89]
-        - Dividend per share: $23
-        - Current price change: +1.67%, Current price: $507.89
-        - Intraday High：$507.89
-        - Intraday Low: $499.57
-        - Intraday Mean: $503.92
-
-    - C:
-        - The closing prices in the past 5 days are: [443.86, 452.25, 460.57, 461.58, 462.32]
-        - Dividend per share: $25
-        - Current price change: +0.16%, Current price: $462.32
-        - Intraday High：$462.32
-        - Intraday Low: $461.58
-        - Intraday Mean: $462.06
-
-
-Investment strategy for the day: Diversify the portfolio by investing in a mix of high-performing stocks across different sectors, closely monitor market trends, adjust holdings accordingly, and implement risk management strategies such as setting stop-loss orders.
-
---------------------------------------------------------------
-Time:
-- Day: 6
-
-Facts:
-- You current financial situation:
-    - Your total cash is $681.22, and your total wealth is $69051.81.
-    - Asset Situation:
-      Your total portfolio balance is $67425.26, you are holding the following stocks:
-        - B:
-            - You have held 17 shares of this stock
-            - the total portfolio value is $8463.96 the total capital gain is 0.00% LOSS
-            - The prices in the past 5 days are: prices: [482.0, 488.0, 497.37, 502.05, 497.88]
-            - current price change: +0.34%, current price: $499.57, cost price: $497.88
+            - You have held 11 shares of this stock
+            - the total portfolio value is $4923.6 the total capital gain is 1.00% PROFIT
+            - The prices in the past 5 days are: prices: [450.72, 439.4, 441.2, 437.8, 449.03]
+            - current price change: +0.38%, current price: $450.72, cost price: $447.6
 
         - C:
-            - You have held 105 shares of this stock
-            - the total portfolio value is $47434.8 the total capital gain is 3.00% PROFIT
-            - The prices in the past 5 days are: prices: [453.07, 444.34, 443.86, 452.25, 460.57]
-            - current price change: +0.76%, current price: $464.09, cost price: $451.76
-
-        - A:
-            - You have held 25 shares of this stock
-            - the total portfolio value is $11526.5 the total capital gain is 0.00% LOSS
-            - The prices in the past 5 days are: prices: [460.46, 463.54, 468.89, 462.19, 460.87]
-            - current price change: +0.43%, current price: $462.85, cost price: $461.06
+            - You have held 6 shares of this stock
+            - the total portfolio value is $2705.46 the total capital gain is 2.00% LOSS
+            - The prices in the past 5 days are: prices: [443.51, 470.1, 465.25, 455.9, 443.58]
+            - current price change: --0.02%, current price: $443.51, cost price: $450.91
 
 - The stocks that avaliable in the market were:
-    - market index change: Current market index change: 0.54%
+    - market index change: Current market index change: 0.16%
     
     - A:
-        - The closing prices in the past 5 days are: [463.54, 468.89, 462.19, 460.87, 462.85]
+        - The closing prices in the past 5 days are: [439.4, 441.2, 437.8, 449.03, 450.72]
         - Dividend per share: $22
-        - Current price change: +0.43%, Current price: $462.85
-        - Intraday High：$462.85
-        - Intraday Low: $460.87
-        - Intraday Mean: $461.92
+        - Current price change: +0.38%, Current price: $450.72
+        - Intraday High：$450.72
+        - Intraday Low: $449.03
+        - Intraday Mean: $449.9
 
     - B:
-        - The closing prices in the past 5 days are: [488.0, 497.37, 502.05, 497.88, 499.57]
+        - The closing prices in the past 5 days are: [468.12, 470.3, 460.75, 470.66, 471.48]
         - Dividend per share: $23
-        - Current price change: +0.34%, Current price: $499.57
-        - Intraday High：$499.57
-        - Intraday Low: $497.88
-        - Intraday Mean: $498.56
+        - Current price change: +0.17%, Current price: $471.48
+        - Intraday High：$471.48
+        - Intraday Low: $470.15
+        - Intraday Mean: $470.75
 
     - C:
-        - The closing prices in the past 5 days are: [444.34, 443.86, 452.25, 460.57, 464.09]
+        - The closing prices in the past 5 days are: [470.1, 465.25, 455.9, 443.58, 443.51]
         - Dividend per share: $25
-        - Current price change: +0.76%, Current price: $464.09
-        - Intraday High：$464.09
-        - Intraday Low: $460.57
-        - Intraday Mean: $462.52
+        - Current price change: --0.02%, Current price: $443.51
+        - Intraday High：$445.27
+        - Intraday Low: $443.51
+        - Intraday Mean: $444.52
 
 
-Investment strategy for the day: Diversify the portfolio by investing in a mix of high-performing stocks across different sectors, closely monitor market trends, adjust holdings accordingly, implement risk management strategies, and set stop-loss orders to mitigate losses.
+Investment strategy for the day: Maintain a diversified portfolio with no more than 15% exposure to any single stock and no more than 25% to any one sector, allocate about 55% to a diversified core across sectors, 20% to tactical/opportunistic positions and 25% cash or short-term safe assets as a buffer, use limit orders and dollar-cost-averaging to scale into dips, set initial stop-losses at ~8% and trailing stops of ~10% on winners with partial profit-taking at ~15%, rebalance end-of-day each trading day (and trim risk immediately if the market index falls >2% within an iteration), and cap total leverage at 10% to reduce volatility from concentrated bets.
 
 --------------------------------------------------------------
 
