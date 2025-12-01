@@ -43,7 +43,8 @@ def get_args():
 
     parser.add_argument('--Daily_Price_Limit', type=float, default=0.7, help='daily price change limit')
     parser.add_argument('--expense_ratio', type=float, default=0.03, help='capital cost rate')
-    parser.add_argument('--Fluctuation_Constant', type=float, default=20.0, help='price fluctuation constant')
+    # Higher values increase price impact of each matched trade.
+    parser.add_argument('--Fluctuation_Constant', type=float, default=200.0, help='price fluctuation constant')
     parser.add_argument('--verbose', action='store_true', help='print debug information')
 
     parser.add_argument('--analysis_num', type=int, default=3, help='number of agents performing analysis')

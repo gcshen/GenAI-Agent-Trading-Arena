@@ -27,7 +27,7 @@ person_id,virtual_date,iteration,stock_operations,strategy,type,gossip,analysis_
         - Intraday Low: $200
         - Intraday Mean: $200.0
 ",Current market index change: 0.00%,"Your total portfolio balance is $0.00, you do not hold any stock right now."
-1,0,0,buy 5 shares of stock A at $180.0,radical,buy,None,"The analysis results:
+1,0,0,buy 6 shares of stock B at $140.0,radical,buy,None,"The analysis results:
 - hold
 - hold
 - hold",None,"
