@@ -9,7 +9,7 @@ python Stock_Main/main.py \
   --No_Days 10 \
   --Num_Person 9 \
   --Num_Stock 3 \
-  --SAVE_NAME sim01 \
+  --SAVE_NAME sim-1 \
   --persona_name persona.json \
   --stock_name stocks.json \
   --Daily_Price_Limit 0.6 \

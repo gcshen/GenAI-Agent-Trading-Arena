@@ -24,38 +24,23 @@ def init_paths(**kwargs):
     _paths.PROMPT_PATH = _paths.CONTENT_PATH.joinpath("our_prompt_template")
 
 from content.utils import (
-    default_model,
-    default_model_map,
-    llm_provider,
-    offline_mode,
     openai_api_key,
-    openai_base_url,
-    openrouter_api_key,
-    openrouter_base_url,
+    llm_model,
 )
-
-
+llm_model = llm_model or "gpt-3.5-turbo"
 openai.api_key = openai_api_key
+
+print(f">>> Using LLM Model: {llm_model}") ##LOG
+print(f">>> Using OpenAI API Key: {openai_api_key[:8]}****\n-----") ##LOG
 
 def temp_sleep(seconds=1):
     time.sleep(seconds)
-
 # ============================================================================
-# ############################## [gpt-3.5-turbo] #############################
+# ############################## [Really Used APIs] #############################
 # ============================================================================
-
-def ChatGPT_single_request(prompt):
-    temp_sleep()
-    client = OpenAI(
-        api_key=openai_api_key
-        )
-    completion = client.chat.completions.create(
-            model="gpt-3.5-turbo",messages=[{"role": "user", "content": prompt}]
-)
-    return completion.choices[0].message.content
 
 #@timeout(150)
-def ChatGPT_request(prompt):
+def ChatGPT_request(prompt, model=llm_model):
     """
   Given a prompt and a dictionary of GPT parameters, make a request to OpenAI
   server and returns the response. 
@@ -75,7 +60,7 @@ def ChatGPT_request(prompt):
             api_key=openai_api_key
             )
         completion = client.chat.completions.create(
-            model="gpt-3.5-turbo",messages=[{"role": "user", "content": prompt}]
+            model=model,messages=[{"role": "user", "content": prompt}]
 )
        # print(completion)
         return completion.choices[0].message.content
@@ -84,7 +69,83 @@ def ChatGPT_request(prompt):
         print("ChatGPT ERROR!")
         return "ChatGPT ERROR"
 
-def GPT4_request(prompt):
+def ChatGPT_safe_generate_response(
+    prompt,
+    example_output,
+    special_instruction,
+    model=llm_model,
+    repeat=3,
+    fail_safe_response="error",
+    func_validate=None,
+    func_clean_up=None,
+    verbose=False,
+):
+    # prompt = 'GPT-3 Prompt:\n"""\n' + prompt + '\n"""\n'
+    prompt = '"""\n' + prompt + '\n"""\n'
+    prompt += (
+        f"Output the response to the prompt above in json. {special_instruction}\n"
+    )
+    prompt += "Please provide the response in the following format:\n"
+    prompt += '{"output": "' + str(example_output) + '"}'
+
+
+    if verbose:
+        print("CHAT GPT PROMPT")
+        print(prompt)
+    # eventlet.monkey_patch()
+
+    for i in range(repeat):
+        try:
+            # url1=trans_url("plot_stock.jpg")
+            # url1=trans_url("plot_stock2.jpg")
+            #curr_gpt_response =  GPT4o_3images_request(prompt, url1, url2, url3 ).strip()
+            curr_gpt_response = ChatGPT_request(prompt, model=model).strip()#.replace("\n","")
+            curr_gpt_response = re.sub(r'\s{3,}', '\n', curr_gpt_response).replace("\n","\\n")
+            # curr_gpt_response = send_request(prompt)
+            #print("curr_gpt_response",curr_gpt_response)
+            end_index = curr_gpt_response.rfind("}") + 1
+            curr_gpt_response = curr_gpt_response[:end_index]
+            curr_gpt_response = json.loads(curr_gpt_response)["output"]
+
+
+            if verbose:
+                print("---GPT Response---")
+                print(curr_gpt_response)
+                print("---end of GPT Response---")
+
+            print(f"Valid Response: {func_validate(curr_gpt_response, prompt=prompt)}")
+            if func_validate(curr_gpt_response, prompt=prompt):
+                return func_clean_up(curr_gpt_response, prompt=prompt)
+
+            if verbose:
+                print(f"---- repeat count: {i}\n", curr_gpt_response)
+                print(curr_gpt_response)
+                # temp_sleep(5)
+        # except eventlet.timeout.Timeout:
+        except:
+            print("GPT connection error, {}".format(Exception))
+            pass
+
+    # return False
+
+
+
+# ============================================================================
+# ############################## [Unused Funcs] #############################
+# ============================================================================
+
+def ChatGPT_single_request(prompt, model=llm_model):
+    temp_sleep()
+    client = OpenAI(
+        api_key=openai_api_key
+        )
+    completion = client.chat.completions.create(
+            model=model,messages=[{"role": "user", "content": prompt}]
+)
+    return completion.choices[0].message.content
+
+
+def GPT4_request(prompt, model="gpt-4"):
     """
   Given a prompt and a dictionary of GPT parameters, make a request to OpenAI
   server and returns the response. 
@@ -190,66 +251,6 @@ def GPT4_safe_generate_response():
 
 def OpenRouter_generate_response():
     pass
-
-
-def ChatGPT_safe_generate_response(
-    prompt,
-    example_output,
-    special_instruction,
-    repeat=3,
-    fail_safe_response="error",
-    func_validate=None,
-    func_clean_up=None,
-    verbose=False,
-):
-    # prompt = 'GPT-3 Prompt:\n"""\n' + prompt + '\n"""\n'
-    prompt = '"""\n' + prompt + '\n"""\n'
-    prompt += (
-        f"Output the response to the prompt above in json. {special_instruction}\n"
-    )
-    prompt += "Please provide the response in the following format:\n"
-    prompt += '{"output": "' + str(example_output) + '"}'
-
-
-    if verbose:
-        print("CHAT GPT PROMPT")
-        print(prompt)
-    # eventlet.monkey_patch()
-
-    for i in range(repeat):
-        try:
-            #url1=trans_url("plot_stock.jpg")
-            #url1=trans_url("plot_stock2.jpg")
-            #curr_gpt_response =  GPT4o_3images_request(prompt, url1, url2, url3 ).strip()
-            curr_gpt_response = ChatGPT_request(prompt).strip()#.replace("\n","")
-            curr_gpt_response = re.sub(r'\s{3,}', '\n', curr_gpt_response).replace("\n","\\n")
-            # curr_gpt_response = send_request(prompt)
-            #print("curr_gpt_response",curr_gpt_response)
-            end_index = curr_gpt_response.rfind("}") + 1
-            curr_gpt_response = curr_gpt_response[:end_index]
-            curr_gpt_response = json.loads(curr_gpt_response)["output"]
-
-
-            if verbose:
-                print("---GPT Response---")
-                print(curr_gpt_response)
-                print("---end of GPT Response---")
-
-            print(func_validate(curr_gpt_response, prompt=prompt))
-            if func_validate(curr_gpt_response, prompt=prompt):
-                return func_clean_up(curr_gpt_response, prompt=prompt)
-
-            if verbose:
-                print("---- repeat count: \n", i, curr_gpt_response)
-                print(curr_gpt_response)
-                # temp_sleep(5)
-        # except eventlet.timeout.Timeout:
-        except:
-            print("GPT connection error, {}".format(Exception))
-            pass
-
-    #return False
-
 
 
 def ChatGPT_safe_generate_response_OLD(

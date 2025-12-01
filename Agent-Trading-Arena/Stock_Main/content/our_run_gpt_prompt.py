@@ -204,14 +204,14 @@ def update_strategy(virtual_date, persona, w_s, suggestion):
         prompt,
         example_output,
         special_instruction,
-        1,
-        fail_safe,
-        __chat_func_validate,
-        __chat_func_clean_up,
-        False,
+        repeat=1,
+        fail_safe_response = fail_safe,
+        func_validate=__chat_func_validate,
+        func_clean_up=__chat_func_clean_up,
+        verbose=True,
     )
-    if output is False:
-        output = "New investment strategy: keep current strategy."
+    if not output:
+        output = "New investment strategy: keep current strategy. Because output is None."
     with open(_paths.PROMPT_PATH.joinpath("reflect_result.txt"), "w") as file:
         file.write(output)
     return output
@@ -278,6 +278,7 @@ def long_reflect(virtual_date, persona):
             return True
         except Exception:
             return False
+        
 
     prompt_template = _paths.PROMPT_PATH.joinpath("pre_long_reflection.txt") #只有一个input
     prompt_input = create_prompt_input(virtual_date, persona)
@@ -295,14 +296,14 @@ def long_reflect(virtual_date, persona):
         prompt,
         example_output,
         special_instruction,
-        1,
-        fail_safe,
-        __chat_func_validate,
-        __chat_func_clean_up,
-        False,
+        repeat=1,
+        fail_safe_response = fail_safe,
+        func_validate=__chat_func_validate,
+        func_clean_up=__chat_func_clean_up,
+        verbose=False,
     )
-    if output is False:
-        output = "Suggestions for a new investment strategy: None."
+    if not output:
+        output = "Suggestions for a new investment strategy: None. Because output is None."
     with open(_paths.PROMPT_PATH.joinpath("long_pre_reflect_suggestion_result.txt"), "w") as file:
         file.write(output)
     return output
@@ -347,14 +348,14 @@ def pre_reflect(virtual_date, persona):
         prompt,
         example_output,
         special_instruction,
-        1,
-        fail_safe,
-        __chat_func_validate,
-        __chat_func_clean_up,
-        False,
+        repeat=1,
+        fail_safe_response = fail_safe,
+        func_validate=__chat_func_validate,
+        func_clean_up=__chat_func_clean_up,
+        verbose=False,
     )
-    if output is False:
-        output = "Weakness: None. Strength: None"
+    if not output:
+        output = "Weakness: None. Strength: None. Because output is None."
     with open(_paths.PROMPT_PATH.joinpath("pre_reflect_result.txt"), "w") as file:
         file.write(output)
     return output
@@ -395,14 +396,14 @@ def run_gpt_generate_gossip(virtual_date, persona):
         prompt,
         example_output,
         special_instruction,
-        1,
-        fail_safe,
-        __chat_func_validate,
-        __chat_func_clean_up,
-        False,
+        repeat=1,
+        fail_safe_response = fail_safe,
+        func_validate=__chat_func_validate,
+        func_clean_up=__chat_func_clean_up,
+        verbose=False,
     )
-    if output is False:
-        output = "None"
+    if not output:
+        output = "No gossip generated."
     return output
 
 
@@ -460,14 +461,14 @@ def analysis(virtual_date, persona, stocks_list, market_index, analysis_num, gos
         prompt,
         example_output,
         special_instruction,
-        1,
-        fail_safe,
-        __chat_func_validate,
-        __chat_func_clean_up,
-        False,
+        repeat=1,
+        fail_safe_response = fail_safe,
+        func_validate=__chat_func_validate,
+        func_clean_up=__chat_func_clean_up,
+        verbose=False,
     )
-    if output is False:
-        output = "The analysis results:\n- hold\n- hold\n- hold"
+    if not output:
+        output = "The analysis results:\n- hold\n- hold\n- hold.\nBecause output is None."
     return output, gossip
 
 
@@ -525,14 +526,15 @@ def run_gpt_prompt_choose_buy_stock(virtual_date, persona, stocks_list, analysis
         prompt,
         example_output,
         special_instruction,
-        1,
-        fail_safe,
-        __chat_func_validate,
-        __chat_func_clean_up,
-        False,
+        repeat=1,
+        fail_safe_response = fail_safe,
+        func_validate=__chat_func_validate,
+        func_clean_up=__chat_func_clean_up,
+        verbose=True,
     )#gpt_response or false
-    if output is False:
-        return "Operation: hold"
+    # if output is False:
+    if not output:
+        return "Operation: hold. Because output is None."
     return output[0]
 
 
@@ -590,19 +592,20 @@ def run_gpt_prompt_choose_sell_stock(
     #     file.write(prompt)
 
     special_instruction = ""
-    fail_safe = get_fail_safe()
+    fail_safe = get_fail_safe() ##NOTE: False
     output = ChatGPT_safe_generate_response(
         prompt,
         example_output,
         special_instruction,
-        1,
-        fail_safe,
-        __chat_func_validate,
-        __chat_func_clean_up,
-        False,
+        repeat=1,
+        fail_safe_response = fail_safe,
+        func_validate=__chat_func_validate,
+        func_clean_up=__chat_func_clean_up,
+        verbose=False,
     )
-    if output is False:
-        return "Operation: hold"
+    # if output is False:
+    if not output:
+        return "Operation: hold. Because output is None."
     return output[0]
 
 
